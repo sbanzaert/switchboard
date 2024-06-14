@@ -1,12 +1,16 @@
 import mido
 import rtmidi
+from miditoolkit.midi import parser as mid_parser
 import RPi.GPIO as GPIO
 from mido import MidiFile
-
-m=MidiFile('/home/pi/Projects/MIDIsynth/peeweeswitchtest.mid')
+midPath = '/home/pi/Projects/switchboard/peeweeswitchtest3_populated.mid'
+m=MidiFile(midPath)
+midParsed = mid_parser.MidiFile(midPath)
+g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
+gameTrack = next(g) + 1
 
 jackState = ["grey", "grey", "grey", "grey"]
-jackNoteCenters = [71, 74, 77, 80]
+jackNoteCenters = [0, 1, 2, 3]
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -32,12 +36,13 @@ ports = mout.get_ports()
 print(ports)
 mout.open_port(1)
 
+
 for msg in m.play():
-    if(msg.channel != 15):
+    if(msg.channel != gameTrack):
         mout.send_message(msg.bytes())
     else:
         for i in range(len(jackState)):
-            if (msg.type== "note_off" and (jackNoteCenters[i]-1<= msg.note <= jackNoteCenters[i]+1)):
+            if (msg.type== "note_off" and (msg.note == jackNoteCenters[i] or msg.note == jackNoteCenters[i]+30 or msg.note == jackNoteCenters[i]+60)):
                 jackState[i] = "grey"
             elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]+1):
                 jackState[i] = "red"
