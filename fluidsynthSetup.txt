@@ -1,0 +1,1 @@
+screen -dmS FluidSynth0 bash -c "sudo nice -n -20 fluidsynth -i -s -g 0.6 -a alsa -o audio.alsa.device=hw:1 -c 2 -z 64 -o synth.cpu-cores=4 -o synth.polyphony=128 /home/pi/Projects/MIDIsynth/Orpheus_18.06.2020.sf2"
