@@ -2,6 +2,8 @@ import mido
 import rtmidi
 from miditoolkit.midi import parser as mid_parser
 import RPi.GPIO as GPIO
+import tkinter as tk
+
 from mido import MidiFile
 midPath = '/home/pi/Projects/switchboard/peeweeswitchtest3_populated.mid'
 m=MidiFile(midPath)
@@ -10,6 +12,12 @@ g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
 gameTrack = next(g) + 1
 checkNote = 120
 score = 100
+
+root = tk.Tk()
+root.geometry("{0}x{1}+0+0".format(int(root.winfo_screenwidth()/2), int(root.winfo_screenheight()/2)))
+l = tk.Label(text=score, fg='red',font=('Helvetica', 120))
+l.pack(expand=True)
+root.update()
 
 jackState = ["grey", "grey", "grey", "grey"]
 jackNoteCenters = [0, 1, 2, 3]
@@ -39,11 +47,14 @@ def updateScreen():
             GPIO.output(grPins[i], 1)
 
 def updateScore():
+    global score
     for i in range(len(jackTargets)):
-        if (GPIO.input(inPins[i] == jackTargets[i])):
+        if (GPIO.input(inPins[i]) == jackTargets[i]):
             score += 1
         else:
             score -= 1
+    l.config(text=score)
+    root.update()
 
 mout = rtmidi.MidiOut()
 ports = mout.get_ports()
@@ -58,7 +69,7 @@ for msg in m.play():
         for i in range(len(jackState)):
             if (msg.type == "note_off" and msg.note == jackNoteCenters[i]):
                 jackState[i] = "grey"
-                jackTargets[i] = 0
+                jackTargets[i] = 1
             elif (msg.type == "note_off" and msg.note == jackNoteCenters[i]+30):
                 jackState[i] = 'grey'
             elif (msg.type == "note_off" and  msg.note == jackNoteCenters[i]+60):
@@ -69,7 +80,7 @@ for msg in m.play():
                 jackState[i] = "green"
             elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]):
                 jackState[i] = "green"
-                jackTargets[i] = 1
+                jackTargets[i] = 0
         if (msg.type == "note_on" and msg.note == checkNote):
             updateScore()
         updateScreen()
