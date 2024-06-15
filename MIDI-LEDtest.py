@@ -21,7 +21,7 @@ root.update()
 
 jackState = ["grey", "grey", "grey", "grey"]
 jackNoteCenters = [0, 1, 2, 3]
-jackTargets = [0,0,0,0] # 0 = nop, 1 = actuated
+jackTargets = [1,1,1,1] # 1 = nop, 0 = actuated (pullup resistor)
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
