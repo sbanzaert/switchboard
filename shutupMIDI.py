@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from __future__ import print_function
 import RPi.GPIO as GPIO
 import time

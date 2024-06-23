@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import mido
 import rtmidi
 from miditoolkit.midi import parser as mid_parser
