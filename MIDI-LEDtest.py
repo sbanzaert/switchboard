@@ -3,6 +3,7 @@ import rtmidi
 from miditoolkit.midi import parser as mid_parser
 import RPi.GPIO as GPIO
 import tkinter as tk
+import math
 
 from mido import MidiFile
 midPath = '/home/pi/Projects/switchboard/peeweeswitchtest3_populated.mid'
@@ -10,8 +11,12 @@ m=MidiFile(midPath)
 midParsed = mid_parser.MidiFile(midPath)
 g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
 gameTrack = next(g) + 1
+g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Bells")
+bellTrack = next(g) + 1
 checkNote = 120
 score = 100
+gain = 0.5
+decayRate = 0.6
 
 root = tk.Tk()
 root.geometry("{0}x{1}+0+0".format(int(root.winfo_screenwidth()/2), int(root.winfo_screenheight()/2)))
@@ -49,10 +54,14 @@ def updateScreen():
 def updateScore():
     global score
     for i in range(len(jackTargets)):
-        if (GPIO.input(inPins[i]) == jackTargets[i]):
-            score += 1
-        else:
-            score -= 1
+        if (GPIO.input(inPins[i]) == 0 and jackTargets[i] > 0):
+            score += math.floor(jackTargets[i]*10)
+        if (GPIO.input(inPins[i]) == 1 and jackTargets[i] < 0):
+            score -= math.floor(jackTargets[i]*10)
+        if (GPIO.input(inPins[i]) == 0 and jackTargets[i] < 0):
+            score += math.floor(jackTargets[i]*10)
+        if (GPIO.input(inPins[i]) == 1 and jackTargets[i] > 0):
+            score -= math.floor(jackTargets[i]*10)            
     l.config(text=score)
     root.update()
 
@@ -64,12 +73,15 @@ mout.open_port(1)
 
 for msg in m.play():
     if(msg.channel != gameTrack):
+        if(msg.channel != bellTrack): ## reduce volume of everything but bells
+            if(msg.type == 'note_on'):
+                msg.velocity = math.floor(msg.velocity * gain)
         mout.send_message(msg.bytes())
     else:
         for i in range(len(jackState)):
             if (msg.type == "note_off" and msg.note == jackNoteCenters[i]):
                 jackState[i] = "grey"
-                jackTargets[i] = 1
+                jackTargets[i] = -1
             elif (msg.type == "note_off" and msg.note == jackNoteCenters[i]+30):
                 jackState[i] = 'grey'
             elif (msg.type == "note_off" and  msg.note == jackNoteCenters[i]+60):
@@ -80,8 +92,10 @@ for msg in m.play():
                 jackState[i] = "green"
             elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]):
                 jackState[i] = "green"
-                jackTargets[i] = 0
+                jackTargets[i] = 1
         if (msg.type == "note_on" and msg.note == checkNote):
             updateScore()
+            jackTargets = [i * decayRate for i in jackTargets]
+            
         updateScreen()
 GPIO.cleanup()
