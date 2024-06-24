@@ -20,14 +20,15 @@ gain = 0.5
 decayRate = 0.6
 
 root = tk.Tk()
-root.geometry("{0}x{1}+0+0".format(int(root.winfo_screenwidth()/2), int(root.winfo_screenheight()/2)))
-l = tk.Label(text=score, fg='red',font=('Helvetica', 120))
+root.geometry("{0}x{1}+0+0".format(int(root.winfo_screenwidth()/1.5), int(root.winfo_screenheight()/1.5)))
+root.configure(bg='black')
+l = tk.Label(text=score, fg='grey', bg='black',font=('Helvetica', 160))
 l.pack(expand=True)
 root.update()
 
 jackState = ["grey", "grey", "grey", "grey"]
 jackNoteCenters = [0, 1, 2, 3]
-jackTargets = [1,1,1,1] # 1 = nop, 0 = actuated (pullup resistor)
+jackTargets = [0,0,0,0]
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
