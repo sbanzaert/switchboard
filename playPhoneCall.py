@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 # from https://spotify.github.io/pedalboard/faq.html
+# to do: output stream to alsa
+
 
 from pedalboard import Pedalboard, Chorus, Reverb
 # likely plugins: chorus, reverb, lowpass, bitcrush
