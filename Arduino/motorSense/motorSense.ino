@@ -1,8 +1,5 @@
 /*****
  * To do:
- * read 2 incoming pins
- * detect & write motor state
- * output neopixel data
  * 
  * LOW LOW off
  * LOW HI  CW

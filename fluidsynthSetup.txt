@@ -1,1 +1,7 @@
 screen -dmS FluidSynth0 bash -c "sudo nice -n -20 fluidsynth -i -s -g 0.6 -a alsa -o audio.alsa.device=hw:1 -c 2 -z 64 -o synth.cpu-cores=4 -o synth.polyphony=128 /home/pi/Projects/MIDIsynth/Orpheus_18.06.2020.sf2"
+
+maybe: audio.coreaudio.channel-map="0,-1" to only play left channel (from https://www.fluidsynth.org/api/settings_audio.html)
+https://www.maketecheasier.com/alsa-utilities-manage-linux-audio-command-line/
+https://wiki.archlinux.org/title/Advanced_Linux_Sound_Architecture
+https://stackoverflow.com/questions/43861164/passing-data-between-separately-running-python-scripts
+https://spotify.github.io/pedalboard/examples.html
