@@ -9,7 +9,7 @@ from pedalboard import Pedalboard, Chorus, Reverb
 from pedalboard.io import AudioFile
 from tqdm import tqdm
 
-board = Pedalboard([Compressor(), Reverb()])
+board = Pedalboard([Chorus(), Reverb()])
 reverb = board[1]
 
 # Smaller step sizes would give a smoother transition,
@@ -17,7 +17,7 @@ reverb = board[1]
 step_size_in_samples = 100
 
 # Manually step through the audio _n_ samples at a time, reading in chunks:
-with AudioFile("sample.wav") as af:
+with AudioFile("untitled.wav") as af:
 
     # Open the output audio file so that we can directly write audio as we process, saving memory:
     with AudioFile(
