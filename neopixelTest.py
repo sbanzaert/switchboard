@@ -4,7 +4,7 @@ import neopixel
 from time import sleep
 
 pixel_pin = board.D18
-num_pixels = 100
+num_pixels = 10
 ORDER = neopixel.GRB # RGB or GRB
 colors = ((255,0,0),(0,255,0),(0,0,255))
 
@@ -15,13 +15,8 @@ pixels = neopixel.NeoPixel(
     brightness=1,
     auto_write=True,
     pixel_order = ORDER)
-pixels[0] = (255,0,0)
-sleep(1)
-pixels[0] = (0,255,0)
-sleep(1)
-pixels[0] = (0,0,255)
-
-for n in range(num_pixels):
-    pixels[n] = colors[n % 3]
-    sleep(1)
-    pixels[n] = (0,0,0)
+while True:
+    for n in range(num_pixels):
+        pixels[n] = colors[n % 3]
+        sleep(0.4)
+        pixels[n] = (0,0,0)
