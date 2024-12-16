@@ -41,4 +41,4 @@ while True:
         else:
             pixels[n] = colors[n % 3]
             sleep(0.075)
-            pixels[n] = (0,0,0)
+            #pixels[n] = (0,0,0)
