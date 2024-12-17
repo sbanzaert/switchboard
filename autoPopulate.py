@@ -1,33 +1,44 @@
 from miditoolkit.midi import parser as mid_parser
 from miditoolkit.midi import containers as ct
-import mido
 import math
 from pathlib import Path
 
+## takes MIDI w/ a track named "Game" with notes corresponding to jack and switch targets,
+## generates additional notes to drive LED lead-in and -out,
+## generates additional tracks to drive bell actuators on table
+## switchboard has 30 jacks, 8 switches, 1 hand crank o_O
+
 ## "game" MIDI track structure:
 ## PITCHES
-## 0-19 - socket targets
-## 20-29 - switch targets
-## n + 30 - lead-in (30-59)
-## n + 60 - lead-out (60-89)
-## n + 90 - "test points" (90-119) -- not needed, covered below
-## 120 - test points
+## 0-29 - jack targets
+## 30-37 - switch targets
+## 38 - hand crank
+## n + 40 - lead-in (40-79)
+## n + 80 - lead-out (80-119)
+## 127 - test points (this sets the time the game actually checks inputs)
 ##
 ## VELOCITY (actuator selection)
-## 1, 127: telephone bells
-## 20: awoooooga horn
-## 40: cowbell
-## 60: train whistle?
+## 127: telephone bell
+## 20: alarm
+## 40: car horn
+## 60: not used
+
+#define pitch ranges, values, velocities as above
+jackRange = range(0,30)
+switchRange = range(30, 38)
+crankPitch = 38
+leadInSkip = 40
+leadOutSkip = 80
+testPointPitch = 127
+velBell = 127
+velAlarm = 20
+velHorn = 40
+bellPitch = 127
+alarmPitch = 20
+hornPitch = 40
 
 
-## Prototype implementation:
-## 
-##
-##
-##
-##
-
-fn = "../music/peeweeswitchtest3.mid"
+fn = "./peewee.mid"
 p = Path(fn)
 fn_out = "{0}_{1}{2}".format(p.stem, "populated", p.suffix)
 print(fn_out)
@@ -55,87 +66,114 @@ targetBeat = math.floor(targetMargin * quarter)
 blinkDuration = math.floor(.5 * quarter) # eigth-note per blink
 leadInCount = 4 # 4-beat intro
 leadOutCount = 4
+crankLeadInOut = 4
 
-
-# create track for actuators - this does not work :(
-# bellTrack = mido.MidiTrack()
-# bellTrack.append(mido.Message('program_change', program=124, time=0))
-# mid.instruments.append(bellTrack)
 
 print(mid.instruments)
 print("....................")
 
 for n in mid.instruments[gameTrack].notes:
-    for p in range(0, 20):
+    for p in jackRange:
         if (n.pitch == p):
-            ## generate LED lead in/out
+            ## generate bell triggers (bell track)
+            pitch = bellPitch          # western electric telephone bell
+            start = n.start - leadInCount*quarter - (dottedQuarter + sixteenth)
+            stop = start + sixteenth
+            note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            mid.instruments[bellTrack].notes.append(note)
+            start = n.start - leadInCount*quarter - (quarter + sixteenth)
+            stop = start + (quarter + sixteenth)
+            note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            mid.instruments[bellTrack].notes.append(note) 
+
+            ## generate LED lead in/out (game track)
             for i in range(leadInCount):
                 start = n.start - (i+1)*quarter
                 stop = start + blinkDuration
-                pitch = p + 30
+                pitch = p + leadInSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
                 mid.instruments[gameTrack].notes.append(note)
             for i in range(leadOutCount):
                 start = n.end - (i+1)*quarter
                 stop = start + blinkDuration
-                pitch = p + 60
+                pitch = p + leadOutSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
                 mid.instruments[gameTrack].notes.append(note)
-            
-            # ## generate "test" track -- covered in a single track below
-            # numPoints = math.ceil((n.end - n.start)/quarter)
-            # for i in range(numPoints):
-            #     start = n.start + targetMargin*quarter + quarter*i
-            #     stop = start + targetMargin*quarter
-            #     pitch = p + 90
-            #     note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
-            #     mid.instruments[gameTrack].notes.append(note)
-                
+    for p in switchRange:
+        if (n.pitch == p):
+        ## generate car horn trigger
+            pitch = hornPitch
+            start = n.start - leadInCount*quarter - (quarter+3*sixteenth)
+            stop = start + (sixteenth)
+            note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
+            mid.instruments[bellTrack].notes.append(note)
+            start = n.start - leadInCount*quarter - (quarter)
+            stop = start + (quarter)
+            note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            mid.instruments[bellTrack].notes.append(note)
 
-            ## generate phone ringer and other audio signals
+            ## generate LED lead in/out (game track)
+            for i in range(leadInCount):
+                start = n.start - (i+1)*quarter
+                stop = start + blinkDuration
+                pitch = p + leadInSkip
+                note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
+                mid.instruments[gameTrack].notes.append(note)
+            for i in range(leadOutCount):
+                start = n.end - (i+1)*quarter
+                stop = start + blinkDuration
+                pitch = p + leadOutSkip
+                note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
+                mid.instruments[gameTrack].notes.append(note)     
+
+    if (n.pitch == crankPitch):
+        ## generate alarm bell
+        pitch = alarmPitch          # fire alarm: 1e+AAAAAAAAAAAAA
+        start = n.start - leadInCount*quarter - (3*quarter + sixteenth)
+        stop = start + (3*quarter + sixteenth)
+        note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
+        mid.instruments[bellTrack].notes.append(note)   
+        ## generate arduino trigger
+        start = n.start - crankLeadInOut*quarter
+        stop = n.end - crankLeadInOut*quarter
+        pitch = crankPitch + leadInSkip
+        note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
+        mid.instruments[gameTrack].notes.append(note)
+            ## generate actuator triggers
             ## std phone ringer: 1,2,3 (e..a),4, lead-in, target live
-            if(n.velocity == 127 or n.velocity == 1):
-                if(n.velocity == 127):
-                    pitch = 93          # ringer 1
-                if(n.velocity == 1):
-                    pitch = 98          # ringer 2
-                start = n.start - leadInCount*quarter - (dottedQuarter + sixteenth)
-                stop = start + sixteenth
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
-                mid.instruments[bellTrack].notes.append(note)
-                start = n.start - leadInCount*quarter - (quarter + sixteenth)
-                stop = start + (quarter + sixteenth)
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
-                mid.instruments[bellTrack].notes.append(note)
-            if(n.velocity == 20):
-                pitch = 82              # awooooooooga
-                start = n.start - leadInCount*quarter - (2*quarter + sixteenth)
-                stop = start + (2*quarter + sixteenth)
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
-                mid.instruments[bellTrack].notes.append(note)
-            if(n.velocity == 40):
-                pitch = 83              # COWBELL
-                start = n.start - leadInCount*quarter - (3*quarter)
-                stop = start + (2*quarter + eighth)
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
-                mid.instruments[bellTrack].notes.append(note)
-            if(n.velocity == 60):
-                pitch = 84              # CHOO CHOOOOOOO
-                start = n.start - leadInCount*quarter - (3*quarter+eighth)
-                stop = start + eighth
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
-                mid.instruments[bellTrack].notes.append(note)
-                start = n.start - leadInCount*quarter - (2*quarter + eighth)
-                stop = start + (2*quarter + eighth)
-                note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
-                mid.instruments[bellTrack].notes.append(note)                                                
+            # if(n.velocity == velBell ):
+            #     pitch = bellPitch          # western electric telephone bell, default
+            #     start = n.start - leadInCount*quarter - (dottedQuarter + sixteenth)
+            #     stop = start + sixteenth
+            #     note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            #     mid.instruments[bellTrack].notes.append(note)
+            #     start = n.start - leadInCount*quarter - (quarter + sixteenth)
+            #     stop = start + (quarter + sixteenth)
+            #     note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            #     mid.instruments[bellTrack].notes.append(note)
+            # if(n.velocity == velAlarm):
+            #     pitch = alarmPitch          # fire alarm: 1e+AAAAAAAAAAAAA
+            #     start = n.start - leadInCount*quarter - (3*quarter + sixteenth)
+            #     stop = start + (3*quarter + sixteenth)
+            #     note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
+            #     mid.instruments[bellTrack].notes.append(note)
+            # if(n.velocity == velHorn):   
+            #     pitch = hornPitch              # Car horn: 1...2...3E..4E+A
+            #     start = n.start - leadInCount*quarter - (quarter+3*sixteenth)
+            #     stop = start + (sixteenth)
+            #     note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
+            #     mid.instruments[bellTrack].notes.append(note)
+            #     start = n.start - leadInCount*quarter - (quarter)
+            #     stop = start + (quarter)
+            #     note = ct.Note(start=start, end=stop, pitch=pitch, velocity = 127)
+            #     mid.instruments[bellTrack].notes.append(note)                              
 
 print(mid.instruments)
 print(".............")
 ## generate "check state" timing track
 numChecks = math.floor(mid.max_tick/quarter)
 for i in range(numChecks):
-    pitch = 120
+    pitch = testPointPitch
     start = quarter*i + targetBeat
     stop = start + targetBeat
     note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
