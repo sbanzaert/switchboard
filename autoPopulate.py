@@ -93,6 +93,12 @@ for n in mid.instruments[gameTrack].notes:
                 pitch = p + leadInSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
                 mid.instruments[gameTrack].notes.append(note)
+            # plus a long sustain which will be overriden by the lead-out, one possible double-off when both release at end of this note
+            start = n.start
+            stop = n.end
+            pitch = p + leadInSkip
+            note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
+            mid.instruments[gameTrack].notes.append(note)
             for i in range(leadOutCount):
                 start = n.end - (i+1)*quarter
                 stop = start + blinkDuration
@@ -113,18 +119,19 @@ for n in mid.instruments[gameTrack].notes:
             mid.instruments[bellTrack].notes.append(note)
 
             ## generate LED lead in/out (game track)
-            for i in range(leadInCount):
+            for i in range(leadInCount):    # leadin will control top LED
                 start = n.start - (i+1)*quarter
                 stop = start + blinkDuration
                 pitch = p + leadInSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
                 mid.instruments[gameTrack].notes.append(note)
-            for i in range(leadOutCount):
+            for i in range(leadOutCount):   # leadout: bottom LED
                 start = n.end - (i+1)*quarter
                 stop = start + blinkDuration
                 pitch = p + leadOutSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
-                mid.instruments[gameTrack].notes.append(note)     
+                mid.instruments[gameTrack].notes.append(note)    
+            
 
     if (n.pitch == crankPitch):
         ## generate alarm bell

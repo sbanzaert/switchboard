@@ -27,6 +27,8 @@ jackPinRange = range(0,10)
 switchPinRange = range(10,14)
 
 print("i2c initialized")
+
+
 #####
 ## initialize neopixels
 #####
