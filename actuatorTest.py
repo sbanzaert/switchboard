@@ -2,7 +2,7 @@ from time import sleep
 import board
 import digitalio
 
-honk = digitalio.DigitalInOut(board.D27)
+honk = digitalio.DigitalInOut(board.D4)
 phone = digitalio.DigitalInOut(board.D17)
 alarm = digitalio.DigitalInOut(board.D23)
 unused = digitalio.DigitalInOut(board.D24)

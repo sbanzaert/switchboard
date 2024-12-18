@@ -5,10 +5,10 @@ from time import sleep
 import random
 
 pixel_pin = board.D18
-num_pixels = 145
+num_pixels = 160
 ORDER = neopixel.GRB # RGB or GRB
 colors = ((255,0,0),(0,255,0),(0,0,255))
-skips = list(range(10,17)) + list(range(27,34)) + list(range(44,51)) + list(range(61,68)) + list(range(78,85))+list(range(95,103))+list(range(113,120))+list(range(130,135))
+skips = list(range(10,17)) + list(range(27,34)) + list(range(44,51)) + list(range(61,68)) + list(range(78,85))+list(range(95,103))+list(range(113,120))+list(range(130,135)) + list(range(145,150))
 
 pixels = neopixel.NeoPixel(
     pixel_pin,
@@ -42,3 +42,9 @@ while True:
             pixels[n] = colors[n % 3]
             sleep(0.075)
             #pixels[n] = (0,0,0)
+    for n in range(num_pixels):
+        if n in skips:
+            pixels[n] = (0,0,0)
+        else:
+            pixels[n] = (0,0,0)
+            sleep(0.075)
