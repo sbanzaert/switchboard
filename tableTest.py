@@ -27,8 +27,9 @@ honk = digitalio.DigitalInOut(board.D27)
 phone = digitalio.DigitalInOut(board.D17)
 alarm = digitalio.DigitalInOut(board.D23)
 unused = digitalio.DigitalInOut(board.D24)
-
-for io in (honk, phone, alarm, unused):
+crankA = digitalio.DigitalInOut(board.D21) ## CHOSEN AT RANDOM, FIX IN PERSON
+crankB = digitalio.DigitalInOut(board.D22)
+for io in (honk, phone, alarm, unused, crankA, crankB):
     io.direction = digitalio.Direction.OUTPUT
     io.value = True
 
@@ -62,26 +63,22 @@ i2c = busio.I2C(board.SCL, board.SDA)
 mcp0 = MCP23017(i2c, address=0x20) # base address 0x20, A0-A2 set three LSB
 # mcp1 = MCP23017(i2c, address=0x21)
 # mcp2 = MCP23017(i2c, address=0x22)
-pins0 = [] # gpio on mcp0
-pins1 = [] # mcp1
-pins2 = [] # mcp2
-pinState0 = []
-pinState1 = []
-pinState2 = []
+GPIObanks = (mcp0) # (mcp0, mcp1, mcp2)
+activeGPIO = []
 
-print("setting up mcp GPIO as input/pullup")
-activeGPIO = (pins0) # (pins0, pins1, pins2)
+print("setting up mcp GPIOs as input/pullup")
 
-
-for bank in activeGPIO:
-    for p in range(16):
-        bank.append(mcp0.get_pin(p))
-        bank[p].direction = digitalio.Direction.INPUT
-        bank[p].pull = digitalio.Pull.UP
+## want: activeGPIO = [[mcp0.get_pin(0), mcp0.get_pin(1)...], [mcp1.get_pin(0),...]]
+for i in len(GPIObanks):
+        activeGPIO.append([])
+        for p in range(15):
+            activeGPIO[i].append(GPIObanks[i].get_pin(p))
+            if p == 7 or p == 15:
+                activeGPIO[i][p].direction = digitalio.Direction.OUTPUT    
+            else:
+                activeGPIO[i][p].direction = digitalio.Direction.INPUT
+                activeGPIO[i][p].pull = digitalio.Pull.UP
 print("i2c GPIOs initialized")
-
-jackPinRange = range(0,10)
-switchPinRange = range(10,14)
 
 switchTargets=[]   
 for i in range(len(activeGPIO)): 
@@ -89,7 +86,7 @@ for i in range(len(activeGPIO)):
     for j in range(len(orderMcp0)):
         temp.append(0)
     switchTargets.append(temp)  
-
+#print(switchTargets)
 mout = rtmidi.MidiOut()
 ports = mout.get_ports()
 print(ports)
@@ -104,7 +101,7 @@ for msg in m.play():
             if (msg.type == "note_on" and (msg.note == i + leadInSkip)): # leadIn controls green ON (including solid green during actual target)
                 pixels[jackLEDFromNote(msg.note)] = color['green']
             if (msg.type == "note_on" and (msg.note == i + leadOutSkip)): # leadOut controls red ON
-                pixels[jackLEDFromNote(msg.note)] = color['red']
+                pixels[jackLEDFromNote(msg.note)] = color['red']          
         for i in switchRange:
             if (msg.type == "note_off" and (msg.note == i + leadInSkip or msg.note== i + leadOutSkip)): # turn off both LEDs if off in lead in/out
                 pixels[switchLEDFromNote(msg.note,'up')] = color['off']
@@ -114,34 +111,37 @@ for msg in m.play():
             if (msg.type == "note_on" and (msg.note == i + leadOutSkip)):   # turn on bottom if on in leadout
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['amber']
             if (msg.type == "note_off" and (msg.note == i)):
-                pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom if targeting note ends, this will override the off from the leadout
-
-                
+                pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
+        if msg.note == crankPitch + leadInSkip:
+            if msg.type == "note_on":
+                crankA.value = True
+                crankB.value = False
+            if msg.type == "note_off":
+                crankA.value = True
+                crankB.value = True
+        if msg.type == "note_on" and msg.note in range(jackStart,crankPitch+1):
+            updateTargetsFromNote(msg.note, True)
+        if msg.type == "note_off" and msg.note in range(jackStart,crankPitch):
+            updateTargetsFromNote(msg.note, False)
+        if msg.note == testPointPitch and msg.type == "note_on":
+            inputs = getStructuredGPIO(activeGPIO)
+            updateScore(inputs, switchTargets)
     elif (msg.channel == bellTrack):
-        print("test")
+        if msg.note == bellPitch:
+            if msg.type == "note_on":
+                phone.value = True
+            if msg.type == "note_off":
+                phone.value = False
+        if msg.note == alarmPitch:
+            if msg.type == "note_on":
+                alarm.value = True
+            if msg.type == "note_off":
+                alarm.value = False
+        if msg.note == hornPitch:
+            if msg.type == "note_on":
+                honk.value = True
+            if msg.type == "note_off":
+                honk.value = False
     else:
         mout.send_message(msg.bytes())
-
-
-
-        # for i in range(len(jackState)):
-        #     if (msg.type == "note_off" and msg.note == jackNoteCenters[i]):
-        #         jackState[i] = "grey"
-        #         jackTargets[i] = -1
-        #     elif (msg.type == "note_off" and msg.note == jackNoteCenters[i]+30):
-        #         jackState[i] = 'grey'
-        #     elif (msg.type == "note_off" and  msg.note == jackNoteCenters[i]+60):
-        #         jackState[i] = 'grey'   
-        #     elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]+60):
-        #         jackState[i] = "red"
-        #     elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]+30):
-        #         jackState[i] = "green"
-        #     elif (msg.type == "note_on" and msg.note == jackNoteCenters[i]):
-        #         jackState[i] = "green"
-        #         jackTargets[i] = 1
-        if (msg.type == "note_on" and msg.note == checkNote):
-            updateScore()
-            jackTargets = [i * decayRate for i in jackTargets]
-            
-        updateScreen()
-GPIO.cleanup()
+#GPIO.cleanup()

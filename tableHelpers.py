@@ -8,6 +8,7 @@ score = 100
 correct = 2
 incorrect = -1
 
+   
 
 ######
 ### MIDI track parameters
@@ -59,11 +60,10 @@ color = {'red': (255,0,0), 'green': (0,255,0), 'off': (0,0,0), 'amber': (255,120
 #### i2c GPIO parameters
 ##########
 
-orderMcp0 = [0,1,2,3,4,8,9,10,11,12,5,6,13,14] # {jacks 0-9} {switches 0-3}
+orderMcp0 = [0,1,2,3,4,8,9,10,11,12,5,6,13,14] # {jacks 0-9} {switches 0-3} - 7 & 15 not used, 14 reserved for hand crank
 orderMcp1 = [0,1,2,3,4,8,9,10,11,12,5,6,13,14] # {jacks 0-9} {switches 0-3}
-orderMcp2 = [0,1,2,3,4,8,9,10,11,12,5,6,13,14] # {jacks 0-9} {switches 0-3}
+orderMcp2 = [0,1,2,3,4,8,9,10,11,12,5,6,13,14] # {jacks 0-9} {switches 0-3} {hand crank}
 mcpOrders = (orderMcp0, orderMcp1, orderMcp2)
-
 
 
 def returnFirstElement(a):
@@ -71,7 +71,7 @@ def returnFirstElement(a):
         
 def getOrderedPinState(pinArray, pinOrderArray):
     pinState=[]
-    for p in range(16):
+    for p in range(15):
         # print("p: {} ps0: {}".format(p, pinState0[p]))
         pinState.append(pinArray[p].value) # True = plugged in, need to check switches
     pinState = [pinState[i] for i in pinOrderArray]
@@ -97,6 +97,17 @@ def switchLEDFromNote(pitch: int, dir: str):
         return activeSwitches[dirs[dir]][bank][(pitch-switchStart) % 4]
     else:
         return 0
+def updateTargetsFromNote(pitch: int, v: bool):
+    global switchTargets
+    if pitch in jackRange:
+        bank = math.floor((pitch-jackStart)/10)
+        switchTargets[bank][pitch % 10] = v
+    if pitch in switchRange:
+        bank = math.floor((pitch-switchStart)/4)
+        switchTargets[bank][(pitch-switchStart) % 4] = v
+    if pitch == crankPitch:
+        switchTargets[2][13] = v # use unused part of bank 2 for crank data
+
 
 def updateScore(data, targets): # 
     global score

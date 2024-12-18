@@ -142,7 +142,7 @@ for n in mid.instruments[gameTrack].notes:
         mid.instruments[bellTrack].notes.append(note)   
         ## generate arduino trigger
         start = n.start - crankLeadInOut*quarter
-        stop = n.end - crankLeadInOut*quarter
+        stop = n.end
         pitch = crankPitch + leadInSkip
         note = ct.Note(start=start, end=stop, pitch=pitch, velocity=127)
         mid.instruments[gameTrack].notes.append(note)
