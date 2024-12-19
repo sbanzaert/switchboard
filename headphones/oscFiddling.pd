@@ -1,0 +1,14 @@
+#N canvas 870 241 891 725 12;
+#X obj 276 203 netreceive -u -b;
+#X msg 275 160 listen 1337;
+#X obj 276 248 oscparse;
+#X obj 282 363 print z1;
+#X obj 280 292 unpack symbol float float;
+#X obj 364 346 print z2;
+#X obj 451 347 print z3;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 2 0 4 0;
+#X connect 4 0 3 0;
+#X connect 4 1 5 0;
+#X connect 4 2 6 0;

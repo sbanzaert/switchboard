@@ -2,10 +2,13 @@ from time import sleep
 import board
 import digitalio
 
-honk = digitalio.DigitalInOut(board.D4)
-phone = digitalio.DigitalInOut(board.D17)
-alarm = digitalio.DigitalInOut(board.D23)
+## in relay order: header is GND 1 2 3 4 +5V
+alarm = digitalio.DigitalInOut(board.D23) 
 unused = digitalio.DigitalInOut(board.D24)
+phone = digitalio.DigitalInOut(board.D25)
+honk = digitalio.DigitalInOut(board.D8)
+
+
 honk.direction = digitalio.Direction.OUTPUT
 phone.direction = digitalio.Direction.OUTPUT
 alarm.direction = digitalio.Direction.OUTPUT
