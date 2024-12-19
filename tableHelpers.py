@@ -79,7 +79,7 @@ def getOrderedPinState(pinArray, pinOrderArray):
 
 def getStructuredGPIO(GPIOarray):
     out = []
-    for s in len(GPIOarray):
+    for s in range(len(GPIOarray)):
         out.append(getOrderedPinState(GPIOarray[s],mcpOrders[s]))
     return out
 

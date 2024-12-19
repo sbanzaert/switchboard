@@ -6,13 +6,16 @@ import RPi.GPIO as GPIO
 import math
 import board
 import neopixel
+import digitalio
+import busio
+from adafruit_mcp230xx.mcp23017 import MCP23017
 from mido import MidiFile
 from tableHelpers import *
 
 #####
 ## MIDI - from autoPopulate.py
 #####
-midPath = '/home/pi/Python/switchboard/peewee_populated.mid'
+midPath = '/home/pi/Python/switchboard/midi/peewee_populated.mid'
 m=MidiFile(midPath)
 midParsed = mid_parser.MidiFile(midPath)
 g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
@@ -61,15 +64,15 @@ for i in range(len(allSwitchBots)):
 print("initializing i2c")
 i2c = busio.I2C(board.SCL, board.SDA)
 mcp0 = MCP23017(i2c, address=0x20) # base address 0x20, A0-A2 set three LSB
-# mcp1 = MCP23017(i2c, address=0x21)
-# mcp2 = MCP23017(i2c, address=0x22)
-GPIObanks = (mcp0) # (mcp0, mcp1, mcp2)
+mcp1 = MCP23017(i2c, address=0x21)
+mcp2 = MCP23017(i2c, address=0x22)
+GPIObanks = [mcp0, mcp1, mcp2]
 activeGPIO = []
 
 print("setting up mcp GPIOs as input/pullup")
 
 ## want: activeGPIO = [[mcp0.get_pin(0), mcp0.get_pin(1)...], [mcp1.get_pin(0),...]]
-for i in len(GPIObanks):
+for i in range(len(GPIObanks)):
         activeGPIO.append([])
         for p in range(15):
             activeGPIO[i].append(GPIObanks[i].get_pin(p))
