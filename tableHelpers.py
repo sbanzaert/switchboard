@@ -1,3 +1,5 @@
+import math
+
 def rToL(a: int,b: int ):
     return list(range(a,b))
 
@@ -97,16 +99,7 @@ def switchLEDFromNote(pitch: int, dir: str):
         return activeSwitches[dirs[dir]][bank][(pitch-switchStart) % 4]
     else:
         return 0
-def updateTargetsFromNote(pitch: int, v: bool):
-    global switchTargets
-    if pitch in jackRange:
-        bank = math.floor((pitch-jackStart)/10)
-        switchTargets[bank][pitch % 10] = v
-    if pitch in switchRange:
-        bank = math.floor((pitch-switchStart)/4)
-        switchTargets[bank][(pitch-switchStart) % 4] = v
-    if pitch == crankPitch:
-        switchTargets[2][13] = v # use unused part of bank 2 for crank data
+
 
 
 def updateScore(data, targets): # 

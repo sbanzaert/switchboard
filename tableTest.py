@@ -26,10 +26,10 @@ bellTrack = next(g) + 1
 #####
 ## Native GPIO - 4 @ 12V relays, active LOW
 #####
-honk = digitalio.DigitalInOut(board.D27)
-phone = digitalio.DigitalInOut(board.D17)
-alarm = digitalio.DigitalInOut(board.D23)
+alarm = digitalio.DigitalInOut(board.D23) 
 unused = digitalio.DigitalInOut(board.D24)
+phone = digitalio.DigitalInOut(board.D25)
+honk = digitalio.DigitalInOut(board.D8)
 crankA = digitalio.DigitalInOut(board.D21) ## CHOSEN AT RANDOM, FIX IN PERSON
 crankB = digitalio.DigitalInOut(board.D22)
 for io in (honk, phone, alarm, unused, crankA, crankB):
@@ -89,7 +89,18 @@ for i in range(len(activeGPIO)):
     for j in range(len(orderMcp0)):
         temp.append(0)
     switchTargets.append(temp)  
-#print(switchTargets)
+
+def updateTargetsFromNote(pitch: int, v: bool):
+    global switchTargets
+    if pitch in jackRange:
+        bank = math.floor((pitch-jackStart)/10)
+        switchTargets[bank][pitch % 10] = v
+    if pitch in switchRange:
+        bank = math.floor((pitch-switchStart)/4)
+        switchTargets[bank][(pitch-switchStart) % 4] = v
+    if pitch == crankPitch:
+        switchTargets[2][13] = v # use unused part of bank 2 for crank data
+
 mout = rtmidi.MidiOut()
 ports = mout.get_ports()
 print(ports)
@@ -97,7 +108,8 @@ mout.open_port(1)
 
 
 for msg in m.play():
-    if (msg.channel == gameTrack):
+    if (msg.channel == gameTrack and hasattr(msg,'note')):
+        print('is note!')
         for i in jackRange:
             if (msg.type == "note_off" and (msg.note == i + leadInSkip or msg.note== i + leadOutSkip)): # turn off LED if off in lead in/out
                 pixels[jackLEDFromNote(msg.note)] = color['off']
@@ -129,7 +141,9 @@ for msg in m.play():
         if msg.note == testPointPitch and msg.type == "note_on":
             inputs = getStructuredGPIO(activeGPIO)
             updateScore(inputs, switchTargets)
-    elif (msg.channel == bellTrack):
+            print (score)
+    elif (msg.channel == bellTrack and hasattr(msg,'note')):
+        
         if msg.note == bellPitch:
             if msg.type == "note_on":
                 phone.value = True
