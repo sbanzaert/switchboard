@@ -105,8 +105,7 @@ def switchLEDFromNote(pitch: int, dir: str):
 
 
 
-def updateScore(data, targets): # 
-    global score
+def updateScore(score, data, targets): # 
     if (len(data) != len(targets)):
         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
         return
@@ -121,7 +120,7 @@ def updateScore(data, targets): #
                 score = score + incorrect
             if (data[i][j] == False and targets[i][j] == True):
                 score = score + incorrect
-
+    return score
 
 
 
