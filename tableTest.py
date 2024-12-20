@@ -15,7 +15,7 @@ from tableHelpers import *
 #####
 ## MIDI - from autoPopulate.py
 #####
-midPath = '/home/pi/Python/switchboard/midi/peewee_populated.mid'
+midPath = '/home/pi/Python/switchboard/midi/peewee-dec19_populated.mid'
 m=MidiFile(midPath)
 midParsed = mid_parser.MidiFile(midPath)
 g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
@@ -117,9 +117,9 @@ for msg in m.play():
                 pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['green']   
         if msg.note in jackOutRange:
             if msg.type == "note_off": # turn off LED if off in lead in/out
-                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
+                pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['off']
             if msg.type == "note_on" : # leadOut controls red ON
-                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['red']
+                pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['red']
         if msg.note in jackRange:
             if msg.type == "note_on":
                 pixels[jackLEDFromNote(msg.note)] = color['green']   
@@ -137,7 +137,11 @@ for msg in m.play():
                 pixels[switchLEDFromNote(msg.note-leadOutSkip, 'down')] = color['amber']                
         if msg.note in switchRange:
             if msg.type == "note_off":
-                pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends            
+                pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
+                pixels[switchLEDFromNote(msg.note, 'up')] = color['off'] # turn off top when targeting note ends
+            if msg.type == "note_on":
+                pixels[switchLEDFromNote(msg.note, 'up')] = color['amber'] # turn on top when targeting note starts
+                pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
         if msg.note == crankPitch + leadInSkip:
             if msg.type == "note_on":
                 crankA.value = True
@@ -157,19 +161,19 @@ for msg in m.play():
         
         if msg.note == bellPitch:
             if msg.type == "note_on":
-                phone.value = True
-            if msg.type == "note_off":
                 phone.value = False
+            if msg.type == "note_off":
+                phone.value = True
         if msg.note == alarmPitch:
             if msg.type == "note_on":
-                alarm.value = True
-            if msg.type == "note_off":
                 alarm.value = False
+            if msg.type == "note_off":
+                alarm.value = True
         if msg.note == hornPitch:
             if msg.type == "note_on":
-                honk.value = True
-            if msg.type == "note_off":
                 honk.value = False
+            if msg.type == "note_off":
+                honk.value = True
     else:
         mout.send_message(msg.bytes())
     pixels.show()
