@@ -7,7 +7,7 @@ import math
 import board
 import neopixel
 import digitalio
-import busio
+import busio 
 from adafruit_mcp230xx.mcp23017 import MCP23017
 from mido import MidiFile
 from tableHelpers import *
@@ -45,18 +45,18 @@ ORDER = neopixel.GRB # RGB or GRB, changes addressing but commands are always RG
 pixels = neopixel.NeoPixel(
     pixel_pin,
     num_pixels,
-    brightness=1,
-    auto_write=True,
+    auto_write=False,
     pixel_order = ORDER)
 print("clearing pixels")
 for p in range(num_pixels):
     pixels[p] = color['off']
+pixels.show()
 print("pixels cleared")
 
 ### set up table (game starts all switches down)
 for i in range(len(allSwitchBots)):
     pixels[allSwitchBots[i]] = color['amber']
-
+pixels.show()
 
 #####
 ## initialize i2c GPIO expander
@@ -110,7 +110,7 @@ mout.open_port(1)
 for msg in m.play():
     if (msg.channel == gameTrack and hasattr(msg,'note')):
         print('is note!')
-        for i in jackRange:
+        if msg.note in jackInRange:
             if (msg.type == "note_off" and (msg.note == i + leadInSkip or msg.note== i + leadOutSkip)): # turn off LED if off in lead in/out
                 pixels[jackLEDFromNote(msg.note)] = color['off']
             if (msg.type == "note_on" and (msg.note == i + leadInSkip)): # leadIn controls green ON (including solid green during actual target)

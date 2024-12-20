@@ -19,15 +19,18 @@ jackStart = 0
 jackEnd = 30
 switchStart = 30
 switchEnd = 38
-jackRange = range(jackStart,jackEnd)
-switchRange = range(switchStart, switchEnd)
 crankPitch = 38
 leadInSkip = 40
 leadOutSkip = 80
 testPointPitch = 127
-velBell = 127
-velAlarm = 20
-velHorn = 40
+
+jackRange = range(jackStart,jackEnd)
+switchRange = range(switchStart, switchEnd)
+jackInRange = range(jackStart+leadInSkip, jackEnd+leadInSkip)
+jackOutRange = range(jackStart+leadOutSkip, jackEnd+leadOutSkip)
+switchInRange = range(switchStart + leadInSkip, switchEnd + leadInSkip)
+switchOutRange = range(switchStart + leadOutSkip, switchEnd + leadOutSkip)
+
 bellPitch = 127
 alarmPitch = 20
 hornPitch = 40
