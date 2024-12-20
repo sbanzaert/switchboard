@@ -13,12 +13,12 @@ from mido import MidiFile
 from tableHelpers import *
 import serial
 
-ser = serial.Serial("/dev/ttyXX")
+ser = serial.Serial("/dev/ttyUSB0")
 
 #####
 ## MIDI - from autoPopulate.py
 #####
-midPath = '/home/pi/Python/switchboard/midi/peewee-dec19_populated.mid'
+midPath = '/home/pi/Python/switchboard/midi/peewee-dec19tempo_populated.mid'
 m=MidiFile(midPath)
 midParsed = mid_parser.MidiFile(midPath)
 g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
