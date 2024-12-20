@@ -2,8 +2,8 @@
  * To do:
  * 
  * LOW LOW off
- * LOW HI  CW
- * HI  LOW CCW
+ * LOW HI  go!
+ * HI  LOW go!
  * HI  HI  off
  * 
  */
@@ -13,26 +13,29 @@
   #include <avr/power.h>
 #endif
 
-#define PIN 6
-#define RING_SIZE 16
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(RING_SIZE, PIN, NEO_GRB + NEO_KHZ800);
-
-int brightness[RING_SIZE];
+const int ringPin = 4;
+const int ringSize = 16;
 
 
-#define statePinA 4;
-#define statePinB 5; // motor feedback sent directly to level shifter
+int brightness[ringSize];
+int chaseSpeed = 15;
+char receivedChar;
+boolean newdata = false;
+
+//#define statePinA 4
+//#define statePinB 5
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(ringSize, ringPin, NEO_GRB + NEO_KHZ800);
+
 
 
 void setup() {
-    pinMode(statePinA, INPUT);
-    pinMode(statePinB, INPUT);
-    strip.begin();
-    strip.setBrightness(200);
-    strip.show();
 
+    strip.begin();
+    strip.setBrightness(255);
+    strip.show();
+    Serial.begin(9600);
     // initialize brightness "gaussian"
-    for (int i=0; i< RING_SIZE; i++) {
+    for (int i=0; i< ringSize; i++) {
         if (i==0 || i==4) brightness[i] = 30;
         else if (i==1 || 1==3) brightness[i] = 70;
         else if (i==2) brightness[i]=255;
@@ -41,26 +44,52 @@ void setup() {
 }
 
 void loop() {
+    Serial.println("loop");
     blankStrip();
     int d;
     int animation[5] = {55, 45, 35, 25, 20}; // speed ramp
-    if(digitalRead(statePinA) && !digitalRead(statePinB)) {
+    recvOneChar();
+    if(newdata) {
+      newdata = false;
+      Serial.println("newdata");
+      if (receivedChar == 'y') {
+        Serial.println("y received");
+        receivedChar='x';
         d = 1;
-        for (int i=0; i<5; i++) {
-            strip.setBrightness(i*50+10);
-            crankChase(animation[i], d);
-        }
-        while(digitalRead(statePinA) && !digitalRead(statePinB)) crankChase(chaseSpeed, d); // 1 not d originally
-        for (int i=4; i>=0; i--) {
-            strip.setBrightness(i*50+10);
-            crankChase(animation[i], d);
-        }
-    }
+//        for (int i=0; i< ringSize; i++){
+//          strip.setPixelColor(i, strip.Color(255, 255, 255));
+//          strip.show();
+//          delay(500);
+//          strip.setPixelColor(i, strip.Color(0,0,0));
+//          strip.show();
+//          delay(300);
+//        }
+//        strip.show();
 
+        for (int i=0; i<5; i++) {
+          strip.setBrightness(i*50+10);
+          crankChase(animation[i], d);
+        }
+        while(true) {
+          crankChase(chaseSpeed, d);
+          recvOneChar();
+          if (newdata == true) {
+            if(receivedChar == 'n') break;
+            }
+          }
+        
+        newdata=false;
+        for (int i=4; i>=0; i--) {
+          strip.setBrightness(i*50+10);
+          crankChase(animation[i], d);
+        }   
+      }
+    }
+    
 }
 
 void blankStrip() {
-  for (int i=0; i<RING_SIZE; i++) {
+  for (int i=0; i<ringSize; i++) {
     strip.setPixelColor(i, 0);
   }
   strip.show();
@@ -68,12 +97,12 @@ void blankStrip() {
 
 // performs one lap of a chase sequence
 void crankChase(uint8_t wait, bool dir) {
-  for (int j=0; j<RING_SIZE; j++) {
-    for (int i=0; i<RING_SIZE; i++) {
+  for (int j=0; j<ringSize; j++) {
+    for (int i=0; i<ringSize; i++) {
       strip.setPixelColor(i, strip.Color(brightness[i], brightness[i], brightness[i]));
     }
-    if(dir) rotate_left(brightness, RING_SIZE);
-    else rotate_right(brightness, RING_SIZE);
+    if(dir) rotate_left(brightness, ringSize);
+    else rotate_right(brightness, ringSize);
     strip.show();
     delay(wait);
   }
@@ -96,4 +125,19 @@ void rotate_left(int* a, const int n){
     a[i] = a[i+1];
   }
   a[n-1] = temp;
+}
+
+void recvOneChar() {
+    if (Serial.available() > 0) {
+        receivedChar = Serial.read();
+        newdata = true;
+    }
+}
+
+void showNewData() {
+    if (newdata == true) {
+        Serial.print("This just in ... ");
+        Serial.println(receivedChar);
+        newdata = false;
+    }
 }

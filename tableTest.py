@@ -11,6 +11,9 @@ import busio
 from adafruit_mcp230xx.mcp23017 import MCP23017
 from mido import MidiFile
 from tableHelpers import *
+import serial
+
+ser = serial.Serial("/dev/ttyXX")
 
 #####
 ## MIDI - from autoPopulate.py
@@ -144,11 +147,9 @@ for msg in m.play():
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
         if msg.note == crankPitch + leadInSkip:
             if msg.type == "note_on":
-                crankA.value = True
-                crankB.value = False
+                ser.write(b'y')
             if msg.type == "note_off":
-                crankA.value = True
-                crankB.value = True
+                ser.write(b'n')
         if msg.type == "note_on" and msg.note in range(jackStart,crankPitch+1):
             updateTargetsFromNote(msg.note, True)
         if msg.type == "note_off" and msg.note in range(jackStart,crankPitch):
