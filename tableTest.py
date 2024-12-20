@@ -111,22 +111,28 @@ for msg in m.play():
     if (msg.channel == gameTrack and hasattr(msg,'note')):
         print('is note!')
         if msg.note in jackInRange:
-            if (msg.type == "note_off" and (msg.note == i + leadInSkip or msg.note== i + leadOutSkip)): # turn off LED if off in lead in/out
-                pixels[jackLEDFromNote(msg.note)] = color['off']
-            if (msg.type == "note_on" and (msg.note == i + leadInSkip)): # leadIn controls green ON (including solid green during actual target)
-                pixels[jackLEDFromNote(msg.note)] = color['green']
-            if (msg.type == "note_on" and (msg.note == i + leadOutSkip)): # leadOut controls red ON
-                pixels[jackLEDFromNote(msg.note)] = color['red']          
-        for i in switchRange:
-            if (msg.type == "note_off" and (msg.note == i + leadInSkip or msg.note== i + leadOutSkip)): # turn off both LEDs if off in lead in/out
-                pixels[switchLEDFromNote(msg.note,'up')] = color['off']
-                pixels[switchLEDFromNote(msg.note,'down')] = color['off']
+            if msg.type == "note_off": # turn off LED if off in lead in/out
+                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
+            if msg.type == "note_on": # leadIn controls green ON (including solid green during actual target)
+                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['green']
+            
+        if msg.note in jackOutRange:
+            if msg.type == "note_off": # turn off LED if off in lead in/out
+                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
+            if msg.type == "note_on" : # leadOut controls red ON
+                pixels[jackLEDFromNote(msg.note)] = color['red']
+        if msg.note in switchInRange:
+            if msg.type == "note_off": # turn off both LEDs if off in lead in/out
+                pixels[switchLEDFromNote(msg.note-leadOutSkip'up')] = color['off']
             if (msg.type == "note_on" and (msg.note == i + leadInSkip)):    # turn on top if on in leadin
                 pixels[switchLEDFromNote(msg.note, 'up')] = color['amber']
             if (msg.type == "note_on" and (msg.note == i + leadOutSkip)):   # turn on bottom if on in leadout
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['amber']
             if (msg.type == "note_off" and (msg.note == i)):
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
+        if msg.note in switchOutRange:
+            if msg.type == "note_off": # turn off both LEDs if off in lead in/out
+                pixels[switchLEDFromNote(msg.note-leadOutSkip,'down')] = color['off']
         if msg.note == crankPitch + leadInSkip:
             if msg.type == "note_on":
                 crankA.value = True
@@ -161,4 +167,5 @@ for msg in m.play():
                 honk.value = False
     else:
         mout.send_message(msg.bytes())
+    pixels.show()
 #GPIO.cleanup()
