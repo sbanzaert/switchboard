@@ -52,6 +52,7 @@ def getStructuredGPIO(GPIOarray):
     for s in range(len(GPIOarray)):
         out.append(getOrderedPinState(GPIOarray[s],mcpOrders[s]))
     return out
+
 while True:
     for i in range(3):
         print (getStructuredGPIO(activeGPIO)[i])
