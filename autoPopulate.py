@@ -38,9 +38,9 @@ alarmPitch = 20
 hornPitch = 40
 
 
-fn = "./peewee.mid"
+fn = "./midi/peewee-dec19.mid"
 p = Path(fn)
-fn_out = "{0}_{1}{2}".format(p.stem, "populated", p.suffix)
+fn_out = "./midi/{0}_{1}{2}".format(p.stem, "populated", p.suffix)
 print(fn_out)
 
 mid = mid_parser.MidiFile(fn)
