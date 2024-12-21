@@ -14,3 +14,7 @@ https://stackoverflow.com/questions/43861164/passing-data-between-separately-run
 
 BASIC ALSA AUDIO SETUP:
 https://www.raspberrypi-spy.co.uk/2019/06/using-a-usb-audio-device-with-the-raspberry-pi/
+
+
+PUREDATA ETC HEADLESS
+https://forum.pdpatchrepo.info/topic/11011/starting-puredata-from-systemd-cannot-find-the-jack-server

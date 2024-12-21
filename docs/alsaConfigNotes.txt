@@ -1,5 +1,6 @@
 https://bootlin.com/blog/audio-multi-channel-routing-and-mixing-using-alsalib/
 proc/asound/cards: device 2
+https://forum.pdpatchrepo.info/topic/7655/alsa-output-error-snd-_pcm-_open-device-or-resource-busy/8
 
 probably look into plug vs dshare for not blocking
 
