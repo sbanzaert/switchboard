@@ -61,7 +61,7 @@ allJack3 = rToL(34,44) + rToL(51,61)[::-1]
 allSwitch1top = rToL(103,113)
 allSwitch2top = rToL(120,130)
 allSwitch1bot = rToL(150,160)[::-1]
-allSwitch2bot = rToL(135,144)[::-1]
+allSwitch2bot = rToL(135,145)[::-1]
 allSwitchTops = allSwitch1top + allSwitch2top
 allSwitchBots = allSwitch1bot + allSwitch2bot
 
