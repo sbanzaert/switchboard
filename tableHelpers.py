@@ -4,7 +4,7 @@ def rToL(a: int,b: int ):
     return list(range(a,b))
 
 #####
-## Game setup
+## Game setup: move this to tabletest
 #####
 score = 100
 correct = 2
@@ -34,6 +34,11 @@ switchOutRange = range(switchStart + leadOutSkip, switchEnd + leadOutSkip)
 bellPitch = 127
 alarmPitch = 20
 hornPitch = 40
+
+#GPIO readings for inputs
+jackPlugged = True
+switchUp = False
+switchDown = True
 
 ### pixel addresses indicating wired switches
 ### same ordering as pinState via orderMcpN

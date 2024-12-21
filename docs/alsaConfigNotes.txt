@@ -1,0 +1,4 @@
+https://bootlin.com/blog/audio-multi-channel-routing-and-mixing-using-alsalib/
+proc/asound/cards: device 2
+
+alias: Device
