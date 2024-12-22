@@ -57,7 +57,7 @@ allSwitch2bot = rToL(135,145)[::-1]
 allSwitchTops = allSwitch1top + allSwitch2top
 allSwitchBots = allSwitch1bot + allSwitch2bot
 
-color = {'red': (255,0,0), 'green': (0,255,0), 'off': (0,0,0), 'amber': (255,120,0), 'orange': (255,160,0)}
+color = {'red': (255,0,0), 'green': (0,255,0), 'off': (0,0,0), 'amber': (255,120,0), 'orange': (255,80,0)}
 ##########
 #### i2c GPIO parameters
 ##########

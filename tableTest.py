@@ -18,8 +18,8 @@ from time import sleep
 
 ser = serial.Serial("/dev/ttyUSB0")
 
-gameMode = 'hard'
-handCrank = 0
+gameMode = 'medium'
+handCrank = 1
 
 #####
 ## puredata OSC routines

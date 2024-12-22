@@ -7,7 +7,7 @@ import random
 pixel_pin = board.D18
 num_pixels = 160
 ORDER = neopixel.GRB # RGB or GRB
-colors = ((255,0,0),(0,255,0),(0,0,255))
+colors = ((255,120,0),(255,120,0),(255,80,0))
 skips = list(range(10,17)) + list(range(27,34)) + list(range(44,51)) + list(range(61,68)) + list(range(78,85))+list(range(95,103))+list(range(113,120))+list(range(130,135)) + list(range(145,150))
 
 pixels = neopixel.NeoPixel(
