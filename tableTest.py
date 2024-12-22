@@ -15,10 +15,12 @@ import serial
 import collections
 from pythonosc.udp_client import SimpleUDPClient
 from time import sleep
-sleep(8)
+
 ser = serial.Serial("/dev/ttyUSB0")
 
-gameMode = 'easy'
+gameMode = 'hard'
+handCrank = 0
+
 #####
 ## puredata OSC routines
 #####
@@ -32,7 +34,7 @@ scoreRange = [.5, 1]
 mid_score = sum(scoreRange)/2
 halfScoreRange = [.5, mid_score]
 #ranges are in format [bad,good]
-LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [100, 2000]}
+LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [200, 2000]}
 reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
 
 def remap(x, range1, range2):
@@ -219,7 +221,7 @@ for msg in m.play():
             if msg.type == "note_off": # turn off both LEDs if off in lead in/out
                 pixels[switchLEDFromNote(msg.note-leadInSkip,'up')] = color['off']
             if msg.type == "note_on":    # turn on top if on in leadin
-                pixels[switchLEDFromNote(msg.note-leadInSkip, 'up')] = color['amber']
+                pixels[switchLEDFromNote(msg.note-leadInSkip, 'up')] = color['orange']
         if msg.note in switchOutRange:
             if msg.type == "note_off": # turn off both LEDs if off in lead in/out
                 pixels[switchLEDFromNote(msg.note-leadOutSkip,'down')] = color['off']
@@ -231,7 +233,7 @@ for msg in m.play():
                 pixels[switchLEDFromNote(msg.note, 'up')] = color['off'] # turn off top when targeting note ends
                 updateTargetsFromNote(msg.note, False)
             if msg.type == "note_on":
-                pixels[switchLEDFromNote(msg.note, 'up')] = color['amber'] # turn on top when targeting note starts
+                pixels[switchLEDFromNote(msg.note, 'up')] = color['orange'] # turn on top when targeting note starts
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
                 updateTargetsFromNote(msg.note, True)
         if msg.note == crankPitch + leadInSkip:
@@ -240,7 +242,7 @@ for msg in m.play():
             if msg.type == "note_off":
                 ser.write(b'n')
         if msg.note == crankPitch:
-            if msg.type == "note_on":
+            if (msg.type == "note_on" and handCrank == 1):
                 updateTargetsFromNote(msg.note, True)
         if msg.note == testPointPitch and msg.type == "note_on":
             inputs = getStructuredGPIO(activeGPIO)
@@ -268,4 +270,9 @@ for msg in m.play():
     else:
         mout.send_message(msg.bytes())
     pixels.show()
+
+#####
+## Clean up: stop DSP...
+#####
+PDclient.send_message("/test",[1-rvb,rvb,lpf,2] ) #stop the audio
 #GPIO.cleanup()

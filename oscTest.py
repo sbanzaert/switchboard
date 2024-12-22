@@ -10,10 +10,11 @@ client.send_message("/test",[1-rvb,rvb,lpf,1] )
 
 while True:
     print("{}, {}, {}".format(1-rvb,rvb,lpf))
-    client.send_message("/test",[1-rvb,rvb,lpf,"cheat"] )
-    sleep(1)
-    rvb = rvb + .02
-    lpf = lpf - 300
-    if rvb == 1: rvb = 0
-    if lpf == 80: lpf = 80
+    client.send_message("/test",[1-rvb,rvb,lpf,0] )
+    sleep(10)
+    client.send_message("/test",[1-rvb,rvb,lpf,2] )
+    # rvb = rvb + .02
+    # lpf = lpf - 300
+    # if rvb == 1: rvb = 0
+    # if lpf == 80: lpf = 80
 
