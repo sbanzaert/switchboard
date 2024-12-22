@@ -44,7 +44,7 @@ def updatePuredata(s: float):
     if score <= mid_score:
         rvb = remap(s, halfScoreRange, reverbRange)
     else: rvb = 0
-    PDclient.send_message("/test",[1-rvb,rvb,lpf])
+    PDclient.send_message("/test",[1-rvb,rvb,lpf,0]) # don't intentionally start PD
 
 
 
@@ -186,8 +186,10 @@ def updateTargetsFromNote(pitch: int, v: bool):
 mout = rtmidi.MidiOut()
 ports = mout.get_ports()
 print(ports)
-mout.open_port(1)
+mout.open_port(2)
 
+#start puredata patch!
+PDclient.send_message("/test",[1-rvb,rvb,lpf,1] )
 
 for msg in m.play():
     if (msg.channel == gameTrack and hasattr(msg,'note')):

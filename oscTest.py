@@ -6,10 +6,11 @@ port = 1337
 client = SimpleUDPClient(ip,port)
 rvb = 0
 lpf = 4000
+client.send_message("/test",[1-rvb,rvb,lpf,1] )
 
 while True:
     print("{}, {}, {}".format(1-rvb,rvb,lpf))
-    client.send_message("/test",[1-rvb,rvb,lpf] )
+    client.send_message("/test",[1-rvb,rvb,lpf,"cheat"] )
     sleep(1)
     rvb = rvb + .02
     lpf = lpf - 300
