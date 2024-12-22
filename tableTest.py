@@ -13,8 +13,40 @@ from mido import MidiFile
 from tableHelpers import *
 import serial
 import collections
+from pythonosc.udp_client import SimpleUDPClient
+
 
 ser = serial.Serial("/dev/ttyUSB0")
+
+#####
+## puredata OSC routines
+#####
+ip = '127.0.0.1'
+port = 1337
+PDclient = SimpleUDPClient(ip,port)
+
+rvb = 0
+lpf = 4000
+scoreRange = [.5, 1]
+mid_score = sum(scoreRange)/2
+halfScoreRange = [.5, mid_score]
+LPFrange = [100, 4000]
+reverbRange = [0, .3]
+
+def remap(x, range1, range2):
+    d1 = range1[1]-range1[0]
+    d2 = range2[1]-range2[0]
+    return (d2 * (x - range1[0])/d1) + range2[0]
+
+def updatePuredata(s: float):
+    # map score to LPF value
+    lpf = remap(s, scoreRange, LPFrange)
+    if score <= mid_score:
+        rvb = remap(s, halfScoreRange, reverbRange)
+    else: rvb = 0
+    PDclient.send_message("/test",[1-rvb,rvb,lpf])
+
+
 
 #####
 ## Game setup: move this to tabletest
@@ -28,11 +60,11 @@ for i in range(scoringHistory): # initialize to a full scoring history of extrem
     initScoreDataGood.append(1)
  
 correct_passive = collections.deque(initScoreDataGood, scoringHistory)
-correct__active = collections.deque(initScoreDataGood, scoringHistory)
+correct_active = collections.deque(initScoreDataGood, scoringHistory)
 wrong_removal = collections.deque(initScoreDataBad, scoringHistory)
 wrong_noAct = collections.deque(initScoreDataBad, scoringHistory)
 
-def updateScore(score, data, targets): # 
+def updateScore(data, targets): # 
     if (len(data) != len(targets)):
         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
         return
@@ -45,12 +77,20 @@ def updateScore(score, data, targets): #
         wr = 0
         wn = 0
         for j in range(len(data[i])):
-            if (data[i][j] == True and targets[i][j] == True):
+            if (targets[i][j] == True and data[i][j] == True):
                 ca += 1
-            if (data[i][j] == True and targets[i][j] == False):
-                score = score + incorrect
-            if (data[i][j] == False and targets[i][j] == True):
-                score = score + incorrect
+            if (targets[i][j] == True and data[i][j] == False):
+                wn += 1
+            if (targets[i][j] == False and data[i][j] == True):
+                wr += 1
+            if (targets[i][j] == False and data[i][j] == False):
+                cp += 1
+    correct_active.append(ca)
+    wrong_noAct.append(wn)
+    wrong_removal.append(wr)
+    correct_passive.append(cp)
+    totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
+    score = sum(correct_active) / totalTests
     return score
 
 
@@ -200,6 +240,8 @@ for msg in m.play():
             inputs = getStructuredGPIO(activeGPIO)
             score = updateScore(inputs, switchTargets)
             print (score)
+            updatePuredata(score)
+
     elif (msg.channel == bellTrack and hasattr(msg,'note')):
         
         if msg.note == bellPitch:
