@@ -12,8 +12,47 @@ from adafruit_mcp230xx.mcp23017 import MCP23017
 from mido import MidiFile
 from tableHelpers import *
 import serial
+import collections
 
 ser = serial.Serial("/dev/ttyUSB0")
+
+#####
+## Game setup: move this to tabletest
+#####
+score = 1.00 # percentage score
+scoringHistory = 4 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
+initScoreDataGood = []
+initScoreDataBad = []
+for i in range(scoringHistory): # initialize to a full scoring history of extremely mild success
+    initScoreDataBad.append(0)
+    initScoreDataGood.append(1)
+ 
+correct_passive = collections.deque(initScoreDataGood, scoringHistory)
+correct__active = collections.deque(initScoreDataGood, scoringHistory)
+wrong_removal = collections.deque(initScoreDataBad, scoringHistory)
+wrong_noAct = collections.deque(initScoreDataBad, scoringHistory)
+
+def updateScore(score, data, targets): # 
+    if (len(data) != len(targets)):
+        print("data {} and target {} length mismatch!".format(len(data), len(targets)))
+        return
+    for i in range(len(data)):
+        if (len(data[i]) != len(targets[i])):
+            print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
+            return
+        cp = 0
+        ca = 0
+        wr = 0
+        wn = 0
+        for j in range(len(data[i])):
+            if (data[i][j] == True and targets[i][j] == True):
+                ca += 1
+            if (data[i][j] == True and targets[i][j] == False):
+                score = score + incorrect
+            if (data[i][j] == False and targets[i][j] == True):
+                score = score + incorrect
+    return score
+
 
 #####
 ## MIDI - from autoPopulate.py
@@ -125,9 +164,11 @@ for msg in m.play():
                 pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['red']
         if msg.note in jackRange:
             if msg.type == "note_on":
-                pixels[jackLEDFromNote(msg.note)] = color['green']   
+                pixels[jackLEDFromNote(msg.note)] = color['green']
+                updateTargetsFromNote(msg.note, True)
             if msg.type == "note_off":
-                pixels[jackLEDFromNote(msg.note)] = color['off']                
+                pixels[jackLEDFromNote(msg.note)] = color['off']
+                updateTargetsFromNote(msg.note, False)
         if msg.note in switchInRange:
             if msg.type == "note_off": # turn off both LEDs if off in lead in/out
                 pixels[switchLEDFromNote(msg.note-leadInSkip,'up')] = color['off']
@@ -142,21 +183,22 @@ for msg in m.play():
             if msg.type == "note_off":
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
                 pixels[switchLEDFromNote(msg.note, 'up')] = color['off'] # turn off top when targeting note ends
+                updateTargetsFromNote(msg.note, False)
             if msg.type == "note_on":
                 pixels[switchLEDFromNote(msg.note, 'up')] = color['amber'] # turn on top when targeting note starts
                 pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
+                updateTargetsFromNote(msg.note, True)
         if msg.note == crankPitch + leadInSkip:
             if msg.type == "note_on":
                 ser.write(b'y')
             if msg.type == "note_off":
                 ser.write(b'n')
-        if msg.type == "note_on" and msg.note in range(jackStart,crankPitch+1):
-            updateTargetsFromNote(msg.note, True)
-        if msg.type == "note_off" and msg.note in range(jackStart,crankPitch):
-            updateTargetsFromNote(msg.note, False)
+        if msg.note == crankPitch:
+            if msg.type == "note_on":
+                updateTargetsFromNote(msg.note, True)
         if msg.note == testPointPitch and msg.type == "note_on":
             inputs = getStructuredGPIO(activeGPIO)
-            score = updateScore(score, inputs, switchTargets)
+            score = updateScore(inputs, switchTargets)
             print (score)
     elif (msg.channel == bellTrack and hasattr(msg,'note')):
         

@@ -3,14 +3,6 @@ import math
 def rToL(a: int,b: int ):
     return list(range(a,b))
 
-#####
-## Game setup: move this to tabletest
-#####
-score = 100
-correct = 2
-incorrect = -1
-
-   
 
 ######
 ### MIDI track parameters
@@ -82,8 +74,11 @@ def returnFirstElement(a):
 def getOrderedPinState(pinArray, pinOrderArray):
     pinState=[]
     for p in range(15):
-        # print("p: {} ps0: {}".format(p, pinState0[p]))
-        pinState.append(pinArray[p].value) # True = plugged in, need to check switches
+        # print("p: {} ps0: {}".format(p, pinState0[p])) # get pins in order 0-15 {PORTA}{PORTB}
+        if p in range(0,5) or p in range(0+8, 5+8):
+            pinState.append(pinArray[p].value) # True = plugged in, need to check switches
+        elif p in range(5,7) or p in range(5+8, 7+8):
+            pinState.append(pinArray[p].value == False) # switches are active FALSE
     pinState = [pinState[i] for i in pinOrderArray]
     return pinState
 
