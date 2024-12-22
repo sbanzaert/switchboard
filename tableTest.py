@@ -14,10 +14,11 @@ from tableHelpers import *
 import serial
 import collections
 from pythonosc.udp_client import SimpleUDPClient
-
-
+from time import sleep
+sleep(8)
 ser = serial.Serial("/dev/ttyUSB0")
 
+gameMode = 'easy'
 #####
 ## puredata OSC routines
 #####
@@ -30,21 +31,22 @@ lpf = 4000
 scoreRange = [.5, 1]
 mid_score = sum(scoreRange)/2
 halfScoreRange = [.5, mid_score]
-LPFrange = [100, 4000]
-reverbRange = [0, .3]
+#ranges are in format [bad,good]
+LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [100, 2000]}
+reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
 
 def remap(x, range1, range2):
     d1 = range1[1]-range1[0]
     d2 = range2[1]-range2[0]
     return (d2 * (x - range1[0])/d1) + range2[0]
 
-def updatePuredata(s: float):
+def updatePuredata(s: float, difficulty: str):
     # map score to LPF value
-    lpf = remap(s, scoreRange, LPFrange)
+    lpf = remap(s, scoreRange, LPFranges[difficulty])
     if score <= mid_score:
-        rvb = remap(s, halfScoreRange, reverbRange)
+        rvb = remap(s, halfScoreRange, reverbRanges[difficulty])
     else: rvb = 0
-    PDclient.send_message("/test",[1-rvb,rvb,lpf])
+    PDclient.send_message("/test",[1-rvb,rvb,lpf,0]) # don't intentionally start PD
 
 
 
@@ -90,7 +92,10 @@ def updateScore(data, targets): #
     wrong_removal.append(wr)
     correct_passive.append(cp)
     totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
+    if (totalTests == 0): return 1
     score = sum(correct_active) / totalTests
+    print (correct_active)
+    if (score < scoreRange[0]): score = scoreRange[0]
     return score
 
 
@@ -186,12 +191,13 @@ def updateTargetsFromNote(pitch: int, v: bool):
 mout = rtmidi.MidiOut()
 ports = mout.get_ports()
 print(ports)
-mout.open_port(1)
+mout.open_port(2)
 
+#start puredata patch!
+PDclient.send_message("/test",[1-rvb,rvb,lpf,1] )
 
 for msg in m.play():
-    if (msg.channel == gameTrack and hasattr(msg,'note')):
-        print('is note!')
+    if (msg.channel == gameTrack and hasattr(msg,'note')): 
         if msg.note in jackInRange:
             if msg.type == "note_off": # turn off LED if off in lead in/out
                 pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
@@ -240,7 +246,7 @@ for msg in m.play():
             inputs = getStructuredGPIO(activeGPIO)
             score = updateScore(inputs, switchTargets)
             print (score)
-            updatePuredata(score)
+            updatePuredata(score, gameMode)
 
     elif (msg.channel == bellTrack and hasattr(msg,'note')):
         

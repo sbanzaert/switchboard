@@ -75,10 +75,13 @@ def getOrderedPinState(pinArray, pinOrderArray):
     pinState=[]
     for p in range(15):
         # print("p: {} ps0: {}".format(p, pinState0[p])) # get pins in order 0-15 {PORTA}{PORTB}
-        if p in range(0,5) or p in range(0+8, 5+8):
-            pinState.append(pinArray[p].value) # True = plugged in, need to check switches
-        elif p in range(5,7) or p in range(5+8, 7+8):
-            pinState.append(pinArray[p].value == False) # switches are active FALSE
+ #       if p in range(0,5) or p in range(0+8, 5+8):
+        pinState.append(pinArray[p].value) # True = plugged in, need to check switches
+
+ #       elif p in range(5,7) or p in range(5+8, 7+8):
+ #           pinState.append(pinArray[p].value == False) # switches are active FALSE
+    for p in (5,6,13,14):
+        pinState[p] = not pinState[p]
     pinState = [pinState[i] for i in pinOrderArray]
     return pinState
 
@@ -105,22 +108,22 @@ def switchLEDFromNote(pitch: int, dir: str):
 
 
 
-def updateScore(score, data, targets): # 
-    if (len(data) != len(targets)):
-        print("data {} and target {} length mismatch!".format(len(data), len(targets)))
-        return
-    for i in range(len(data)):
-        if (len(data[i]) != len(targets[i])):
-            print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
-            return
-        for j in range(len(data[i])):
-            if (data[i][j] == True and targets[i][j] == True):
-                score = score + correct
-            if (data[i][j] == True and targets[i][j] == False):
-                score = score + incorrect
-            if (data[i][j] == False and targets[i][j] == True):
-                score = score + incorrect
-    return score
+# def updateScore(score, data, targets): # 
+#     if (len(data) != len(targets)):
+#         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
+#         return
+#     for i in range(len(data)):
+#         if (len(data[i]) != len(targets[i])):
+#             print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
+#             return
+#         for j in range(len(data[i])):
+#             if (data[i][j] == True and targets[i][j] == True):
+#                 score = score + correct
+#             if (data[i][j] == True and targets[i][j] == False):
+#                 score = score + incorrect
+#             if (data[i][j] == False and targets[i][j] == True):
+#                 score = score + incorrect
+#     return score
 
 
 
