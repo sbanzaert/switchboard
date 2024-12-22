@@ -108,22 +108,22 @@ def switchLEDFromNote(pitch: int, dir: str):
 
 
 
-def updateScore(score, data, targets): # 
-    if (len(data) != len(targets)):
-        print("data {} and target {} length mismatch!".format(len(data), len(targets)))
-        return
-    for i in range(len(data)):
-        if (len(data[i]) != len(targets[i])):
-            print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
-            return
-        for j in range(len(data[i])):
-            if (data[i][j] == True and targets[i][j] == True):
-                score = score + correct
-            if (data[i][j] == True and targets[i][j] == False):
-                score = score + incorrect
-            if (data[i][j] == False and targets[i][j] == True):
-                score = score + incorrect
-    return score
+# def updateScore(score, data, targets): # 
+#     if (len(data) != len(targets)):
+#         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
+#         return
+#     for i in range(len(data)):
+#         if (len(data[i]) != len(targets[i])):
+#             print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
+#             return
+#         for j in range(len(data[i])):
+#             if (data[i][j] == True and targets[i][j] == True):
+#                 score = score + correct
+#             if (data[i][j] == True and targets[i][j] == False):
+#                 score = score + incorrect
+#             if (data[i][j] == False and targets[i][j] == True):
+#                 score = score + incorrect
+#     return score
 
 
 
