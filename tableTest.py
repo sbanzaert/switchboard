@@ -90,7 +90,11 @@ def updateScore(data, targets): #
     wrong_removal.append(wr)
     correct_passive.append(cp)
     totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
+    if (totalTests == 0): return 1
     score = sum(correct_active) / totalTests
+    print (wrong_noAct)
+    print (correct_passive)
+    if (score < scoreRange[0]): score = scoreRange[0]
     return score
 
 
