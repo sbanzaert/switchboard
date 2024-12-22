@@ -94,8 +94,7 @@ def updateScore(data, targets): #
     totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
     if (totalTests == 0): return 1
     score = sum(correct_active) / totalTests
-    print (wrong_noAct)
-    print (correct_passive)
+    print (correct_active)
     if (score < scoreRange[0]): score = scoreRange[0]
     return score
 
@@ -198,8 +197,7 @@ mout.open_port(2)
 PDclient.send_message("/test",[1-rvb,rvb,lpf,1] )
 
 for msg in m.play():
-    if (msg.channel == gameTrack and hasattr(msg,'note')):
-        print('is note!')
+    if (msg.channel == gameTrack and hasattr(msg,'note')): 
         if msg.note in jackInRange:
             if msg.type == "note_off": # turn off LED if off in lead in/out
                 pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
