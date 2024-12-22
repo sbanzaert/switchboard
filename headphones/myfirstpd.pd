@@ -1,4 +1,4 @@
-#N canvas 174 148 1577 852 12;
+#N canvas 136 219 1577 852 12;
 #X obj 412 225 readsf~ 2;
 #X obj 401 602 dac~;
 #X msg 278 213 start;
