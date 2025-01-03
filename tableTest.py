@@ -18,7 +18,7 @@ from time import sleep
 
 ser = serial.Serial("/dev/ttyUSB0")
 
-gameMode = 'medium'
+gameMode = 'hard'
 handCrank = 1
 
 #####
@@ -55,20 +55,21 @@ def updatePuredata(s: float, difficulty: str):
 #####
 ## Game setup: move this to tabletest
 #####
-score = 1.00 # percentage score
-scoringHistory = 4 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
+startingScore = scoreRange[0]
+score = startingScore # percentage score
+scoringHistory = 2 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
 initScoreDataGood = []
 initScoreDataBad = []
-for i in range(scoringHistory): # initialize to a full scoring history of extremely mild success
+for i in range(scoringHistory): # initialize to a full scoring history of neutrality
     initScoreDataBad.append(0)
-    initScoreDataGood.append(1)
+    initScoreDataGood.append(0)
  
 correct_passive = collections.deque(initScoreDataGood, scoringHistory)
 correct_active = collections.deque(initScoreDataGood, scoringHistory)
 wrong_removal = collections.deque(initScoreDataBad, scoringHistory)
 wrong_noAct = collections.deque(initScoreDataBad, scoringHistory)
 
-def updateScore(data, targets): # 
+def updateScore(data, targets, currentScore): # 
     if (len(data) != len(targets)):
         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
         return
@@ -94,10 +95,13 @@ def updateScore(data, targets): #
     wrong_removal.append(wr)
     correct_passive.append(cp)
     totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
-    if (totalTests == 0): return 1
+    if (totalTests == 0): return currentScore
     score = sum(correct_active) / totalTests
     print (correct_active)
     if (score < scoreRange[0]): score = scoreRange[0]
+    if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
+    elif (totalTests < 10): score = math.pow(score, .5)
+
     return score
 
 
@@ -246,7 +250,7 @@ for msg in m.play():
                 updateTargetsFromNote(msg.note, True)
         if msg.note == testPointPitch and msg.type == "note_on":
             inputs = getStructuredGPIO(activeGPIO)
-            score = updateScore(inputs, switchTargets)
+            score = updateScore(inputs, switchTargets, score)
             print (score)
             updatePuredata(score, gameMode)
 
@@ -274,5 +278,5 @@ for msg in m.play():
 #####
 ## Clean up: stop DSP...
 #####
-PDclient.send_message("/test",[1-rvb,rvb,lpf,2] ) #stop the audio
+PDclient.send_message("/test",[1-rvb,rvb,lpf,2] ) #stop the audio TODO: check this actually happens
 #GPIO.cleanup()
