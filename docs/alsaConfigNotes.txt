@@ -1,0 +1,32 @@
+https://bootlin.com/blog/audio-multi-channel-routing-and-mixing-using-alsalib/
+proc/asound/cards: device 2
+https://forum.pdpatchrepo.info/topic/7655/alsa-output-error-snd-_pcm-_open-device-or-resource-busy/8
+
+probably look into plug vs dshare for not blocking
+
+~/.Advanced_Linux_Sound_Architecture
+pcm_slave.sltest {
+        pcm "hw:2,0"
+        channels 2
+}
+
+pcm.usbL{
+        type plug
+        slave.pcm {
+                type dshare
+                ipc_key 12345
+                slave sltest
+                bindings.0 0
+                }
+}
+
+pcm.usbR{
+        type plug
+        slave.pcm {
+                type dshare
+                ipc_key 12345
+                slave sltest
+                bindings.0 1
+                }
+}
+

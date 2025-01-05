@@ -1,0 +1,25 @@
+<!DOCTYPE patchbay>
+<patchbay name="jack-patchBay" version="0.9.1">
+ <output-sockets>
+  <socket name="fluidsynth 1" client="fluidsynth" type="jack-audio" exclusive="off">
+   <plug>left</plug>
+  </socket>
+  <socket name="sw 1" client="sw" type="jack-audio" exclusive="off">
+   <plug>output_1</plug>
+  </socket>
+ </output-sockets>
+ <input-sockets>
+  <socket name="system 1" client="system" type="jack-audio" exclusive="off">
+   <plug>playback_1</plug>
+  </socket>
+  <socket name="system 2" client="system" type="jack-audio" exclusive="off">
+   <plug>playback_2</plug>
+  </socket>
+ </input-sockets>
+ <slots/>
+ <cables>
+  <cable input="system 1" type="jack-audio" output="fluidsynth 1"/>
+  <cable input="system 2" type="jack-audio" output="sw 1"/>
+ </cables>
+</patchbay>
+

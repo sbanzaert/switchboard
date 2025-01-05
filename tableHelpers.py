@@ -3,14 +3,6 @@ import math
 def rToL(a: int,b: int ):
     return list(range(a,b))
 
-#####
-## Game setup
-#####
-score = 100
-correct = 2
-incorrect = -1
-
-   
 
 ######
 ### MIDI track parameters
@@ -35,6 +27,11 @@ bellPitch = 127
 alarmPitch = 20
 hornPitch = 40
 
+#GPIO readings for inputs
+jackPlugged = True
+switchUp = False
+switchDown = True
+
 ### pixel addresses indicating wired switches
 ### same ordering as pinState via orderMcpN
 activePanel1 = ( 0, 2, 5, 8, 9,94,92,89,87,86) ## pinState0
@@ -56,11 +53,11 @@ allJack3 = rToL(34,44) + rToL(51,61)[::-1]
 allSwitch1top = rToL(103,113)
 allSwitch2top = rToL(120,130)
 allSwitch1bot = rToL(150,160)[::-1]
-allSwitch2bot = rToL(135,144)[::-1]
+allSwitch2bot = rToL(135,145)[::-1]
 allSwitchTops = allSwitch1top + allSwitch2top
 allSwitchBots = allSwitch1bot + allSwitch2bot
 
-color = {'red': (255,0,0), 'green': (0,255,0), 'off': (0,0,0), 'amber': (255,120,0)}
+color = {'red': (255,0,0), 'green': (0,255,0), 'off': (0,0,0), 'amber': (255,120,0), 'orange': (255,80,0)}
 ##########
 #### i2c GPIO parameters
 ##########
@@ -77,8 +74,14 @@ def returnFirstElement(a):
 def getOrderedPinState(pinArray, pinOrderArray):
     pinState=[]
     for p in range(15):
-        # print("p: {} ps0: {}".format(p, pinState0[p]))
+        # print("p: {} ps0: {}".format(p, pinState0[p])) # get pins in order 0-15 {PORTA}{PORTB}
+ #       if p in range(0,5) or p in range(0+8, 5+8):
         pinState.append(pinArray[p].value) # True = plugged in, need to check switches
+
+ #       elif p in range(5,7) or p in range(5+8, 7+8):
+ #           pinState.append(pinArray[p].value == False) # switches are active FALSE
+    for p in (5,6,13,14):
+        pinState[p] = not pinState[p]
     pinState = [pinState[i] for i in pinOrderArray]
     return pinState
 
@@ -105,22 +108,22 @@ def switchLEDFromNote(pitch: int, dir: str):
 
 
 
-def updateScore(score, data, targets): # 
-    if (len(data) != len(targets)):
-        print("data {} and target {} length mismatch!".format(len(data), len(targets)))
-        return
-    for i in range(len(data)):
-        if (len(data[i]) != len(targets[i])):
-            print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
-            return
-        for j in range(len(data[i])):
-            if (data[i][j] == True and targets[i][j] == True):
-                score = score + correct
-            if (data[i][j] == True and targets[i][j] == False):
-                score = score + incorrect
-            if (data[i][j] == False and targets[i][j] == True):
-                score = score + incorrect
-    return score
+# def updateScore(score, data, targets): # 
+#     if (len(data) != len(targets)):
+#         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
+#         return
+#     for i in range(len(data)):
+#         if (len(data[i]) != len(targets[i])):
+#             print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
+#             return
+#         for j in range(len(data[i])):
+#             if (data[i][j] == True and targets[i][j] == True):
+#                 score = score + correct
+#             if (data[i][j] == True and targets[i][j] == False):
+#                 score = score + incorrect
+#             if (data[i][j] == False and targets[i][j] == True):
+#                 score = score + incorrect
+#     return score
 
 
 

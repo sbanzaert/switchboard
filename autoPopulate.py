@@ -65,9 +65,13 @@ targetBeat = math.floor(targetMargin * quarter)
 
 blinkDuration = math.floor(.5 * quarter) # eigth-note per blink
 leadInCount = 4 # 4-beat intro
-leadOutCount = 4
+leadOutCount = 4 # must be even!
 crankLeadInOut = 4
+# TODO: test leadout for switches especially
 
+if (leadOutCount % 2 == 1):
+    print("you screwed up! leadout must be even")
+    quit()
 
 print(mid.instruments)
 print("....................")
@@ -100,7 +104,7 @@ for n in mid.instruments[gameTrack].notes:
             note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
             mid.instruments[gameTrack].notes.append(note)
             for i in range(leadOutCount):
-                start = n.end - (i+1)*quarter
+                start = n.end - (i+1)*quarter + leadOutCount * quarter / 2 ## center the leadout at the end of tested note
                 stop = start + blinkDuration
                 pitch = p + leadOutSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)

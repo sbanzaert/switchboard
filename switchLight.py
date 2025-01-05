@@ -1,6 +1,6 @@
 # Incoming data format:
 # {jack1-5} {sw1-2} x {jack6-10} {sw3-4} x
-
+import tableHelpers
 
 import board
 import busio
