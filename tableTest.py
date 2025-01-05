@@ -15,11 +15,22 @@ import serial
 import collections
 from pythonosc.udp_client import SimpleUDPClient
 from time import sleep
+import time
+
 
 ser = serial.Serial("/dev/ttyUSB0")
 
 gameMode = 'hard'
 handCrank = 1
+
+#####
+## logging
+#####
+logFn = "./" + time.strftime("%m-%d-%H%M") + "-scores.txt"
+print(logFn)
+
+with open(logFn, 'w', encoding="utf=8") as f:
+    f.write("Log started " + time.strftime("%m-%d--$H$M"))
 
 #####
 ## puredata OSC routines
@@ -28,13 +39,13 @@ ip = '127.0.0.1'
 port = 1337
 PDclient = SimpleUDPClient(ip,port)
 
-rvb = 0
-lpf = 4000
+rvb = 0.5
+lpf = 100
 scoreRange = [.5, 1]
 mid_score = sum(scoreRange)/2
 halfScoreRange = [.5, mid_score]
 #ranges are in format [bad,good]
-LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [200, 2000]}
+LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [80, 2000]}
 reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
 
 def remap(x, range1, range2):
@@ -49,6 +60,7 @@ def updatePuredata(s: float, difficulty: str):
         rvb = remap(s, halfScoreRange, reverbRanges[difficulty])
     else: rvb = 0
     PDclient.send_message("/test",[1-rvb,rvb,lpf,0]) # don't intentionally start PD
+    print (str(score) + ", " + str(lpf) + ", " + str(rvb))
 
 
 
@@ -95,20 +107,26 @@ def updateScore(data, targets, currentScore): #
     wrong_removal.append(wr)
     correct_passive.append(cp)
     totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
-    if (totalTests == 0): return currentScore
+    if (totalTests == 0):
+        with open(logFn, 'a', encoding="utf=8") as f:
+            f.write("Total tests = 0 \n")
+        return currentScore
     score = sum(correct_active) / totalTests
-    print (correct_active)
     if (score < scoreRange[0]): score = scoreRange[0]
-    if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
-    elif (totalTests < 10): score = math.pow(score, .5)
-
+    # if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
+    # elif (totalTests < 10): score = math.pow(score, .5)
+    with open(logFn, 'a', encoding="utf=8") as f:
+        f.write(str(score) + ", " + str(sum(correct_active)) + ", "+ str(sum(wrong_removal)) + ", "+ str(sum(wrong_noAct)) + ", "+ str(totalTests) + '\n')
+        f.write(str(data)+"\n")
+        f.write(str(targets)+"\n")
+        f.write(str(correct_active) + "\n\n")
     return score
 
 
 #####
 ## MIDI - from autoPopulate.py
 #####
-midPath = '/home/pi/Python/switchboard/midi/peewee-dec20_populated.mid'
+midPath = '/home/pi/Python/switchboard/midi/peewee-finalFINALv2_populated.mid'
 m=MidiFile(midPath)
 midParsed = mid_parser.MidiFile(midPath)
 g = (i for i, e in enumerate(midParsed.instruments) if e.name=="Game")
@@ -251,7 +269,7 @@ for msg in m.play():
         if msg.note == testPointPitch and msg.type == "note_on":
             inputs = getStructuredGPIO(activeGPIO)
             score = updateScore(inputs, switchTargets, score)
-            print (score)
+            # print (score)
             updatePuredata(score, gameMode)
 
     elif (msg.channel == bellTrack and hasattr(msg,'note')):
