@@ -38,7 +38,7 @@ alarmPitch = 20
 hornPitch = 40
 
 
-fn = "./midi/peewee-dec20.mid"
+fn = "./midi/peewee-finalFINALv2.mid"
 p = Path(fn)
 fn_out = "./midi/{0}_{1}{2}".format(p.stem, "populated", p.suffix)
 print(fn_out)
@@ -104,7 +104,7 @@ for n in mid.instruments[gameTrack].notes:
             note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
             mid.instruments[gameTrack].notes.append(note)
             for i in range(leadOutCount):
-                start = n.end - (i+1)*quarter + leadOutCount * quarter / 2 ## center the leadout at the end of tested note
+                start = n.end - (i+1)*quarter + leadOutCount * math.floor(quarter / 2) ## center the leadout at the end of tested note
                 stop = start + blinkDuration
                 pitch = p + leadOutSkip
                 note = ct.Note(start = start, end = stop, pitch=pitch, velocity=127)
@@ -191,4 +191,6 @@ for i in range(numChecks):
     mid.instruments[gameTrack].notes.append(note)
 print(mid.instruments)
 print("..............")
+
+    
 mid.dump(fn_out)
