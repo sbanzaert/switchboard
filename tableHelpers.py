@@ -87,8 +87,11 @@ def getOrderedPinState(pinArray, pinOrderArray):
 
 def getStructuredGPIO(GPIOarray):
     out = []
+    print(len(GPIOarray))
     for s in range(len(GPIOarray)):
         out.append(getOrderedPinState(GPIOarray[s],mcpOrders[s]))
+        if (s == len(GPIOarray) -1):
+            out[s][-1] = not out[s][-1]
     return out
 
 def jackLEDFromNote(pitch: int):    # can only access LEDs attached to wired switches
