@@ -1,4 +1,6 @@
 #!/usr/bin/python
+### TODO: check data in from table, crank always reading high
+### TODO: rethink scoring, flooring at 50% is probably hurting more than helping
 
 import rtmidi
 from miditoolkit.midi import parser as mid_parser
@@ -76,23 +78,23 @@ for i in range(scoringHistory): # initialize to a full scoring history of neutra
     initScoreDataBad.append(0)
     initScoreDataGood.append(0)
  
-correct_passive = collections.deque(initScoreDataGood, scoringHistory)
-correct_active = collections.deque(initScoreDataGood, scoringHistory)
-wrong_removal = collections.deque(initScoreDataBad, scoringHistory)
-wrong_noAct = collections.deque(initScoreDataBad, scoringHistory)
+correct_passive = collections.deque(initScoreDataGood, scoringHistory) # need no action, did no action
+correct_active = collections.deque(initScoreDataGood, scoringHistory) # need action, did action
+wrong_removal = collections.deque(initScoreDataBad, scoringHistory) # need no action, did action
+wrong_noAct = collections.deque(initScoreDataBad, scoringHistory) # need action, did no action
 
 def updateScore(data, targets, currentScore): # 
     if (len(data) != len(targets)):
         print("data {} and target {} length mismatch!".format(len(data), len(targets)))
         return
+    cp = 0
+    ca = 0
+    wr = 0
+    wn = 0
     for i in range(len(data)):
         if (len(data[i]) != len(targets[i])):
             print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
             return
-        cp = 0
-        ca = 0
-        wr = 0
-        wn = 0
         for j in range(len(data[i])):
             if (targets[i][j] == True and data[i][j] == True):
                 ca += 1
