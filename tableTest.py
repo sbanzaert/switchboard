@@ -1,6 +1,4 @@
 #!/usr/bin/python
-### TODO: check data in from table, crank always reading high
-### TODO: rethink scoring, flooring at 50% is probably hurting more than helping
 
 import rtmidi
 from miditoolkit.midi import parser as mid_parser
@@ -43,9 +41,9 @@ PDclient = SimpleUDPClient(ip,port)
 
 rvb = 0.5
 lpf = 100
-scoreRange = [.5, 1]
+scoreRange = [0, 1]
 mid_score = sum(scoreRange)/2
-halfScoreRange = [.5, mid_score]
+
 #ranges are in format [bad,good]
 LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [80, 2000]}
 reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
@@ -59,7 +57,7 @@ def updatePuredata(s: float, difficulty: str):
     # map score to LPF value
     lpf = remap(s, scoreRange, LPFranges[difficulty])
     if score <= mid_score:
-        rvb = remap(s, halfScoreRange, reverbRanges[difficulty])
+        rvb = remap(s, [scoreRange[0], mid_score], reverbRanges[difficulty])
     else: rvb = 0
     PDclient.send_message("/test",[1-rvb,rvb,lpf,0]) # don't intentionally start PD
     print (str(score) + ", " + str(lpf) + ", " + str(rvb))
@@ -67,9 +65,9 @@ def updatePuredata(s: float, difficulty: str):
 
 
 #####
-## Game setup: move this to tabletest
+## Game setup
 #####
-startingScore = scoreRange[0]
+startingScore = scoreRange[0]+ (scoreRange[1]-scoreRange[0])/3
 score = startingScore # percentage score
 scoringHistory = 2 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
 initScoreDataGood = []
@@ -82,6 +80,7 @@ correct_passive = collections.deque(initScoreDataGood, scoringHistory) # need no
 correct_active = collections.deque(initScoreDataGood, scoringHistory) # need action, did action
 wrong_removal = collections.deque(initScoreDataBad, scoringHistory) # need no action, did action
 wrong_noAct = collections.deque(initScoreDataBad, scoringHistory) # need action, did no action
+totalTests = collections.deque(initScoreDataBad, scoringHistory) # track how many actions were requested per beat
 
 def updateScore(data, targets, currentScore): # 
     if (len(data) != len(targets)):
@@ -91,30 +90,36 @@ def updateScore(data, targets, currentScore): #
     ca = 0
     wr = 0
     wn = 0
+    tt = 0
+
     for i in range(len(data)):
         if (len(data[i]) != len(targets[i])):
             print("data {} and target {} inner length mismatch on index {}!".format(len(data[i]), len(targets[i]),i))
             return
         for j in range(len(data[i])):
-            if (targets[i][j] == True and data[i][j] == True):
+            if (targets[i][j] == True and data[i][j] == True): #needed action, did action
                 ca += 1
-            if (targets[i][j] == True and data[i][j] == False):
+                tt += 1
+            if (targets[i][j] == True and data[i][j] == False): # needed action, no action (eg was late or missed it)
                 wn += 1
-            if (targets[i][j] == False and data[i][j] == True):
+                tt += 1
+            if (targets[i][j] == False and data[i][j] == True): # no required action, did action (eg failed to remove)
                 wr += 1
-            if (targets[i][j] == False and data[i][j] == False):
+            if (targets[i][j] == False and data[i][j] == False): # no required action, did no action (eg most of the table inputs)
                 cp += 1
     correct_active.append(ca)
     wrong_noAct.append(wn)
     wrong_removal.append(wr)
     correct_passive.append(cp)
-    totalTests = sum(correct_active) + sum(wrong_removal) + sum(wrong_noAct)
-    if (totalTests == 0):
+    totalTests.append(tt)
+
+    if (sum(totalTests) == 0):
         with open(logFn, 'a', encoding="utf=8") as f:
             f.write("Total tests = 0 \n")
         return currentScore
-    score = sum(correct_active) / totalTests
+    score = (3*sum(correct_active) - sum(wrong_removal)) / (3*sum(totalTests))
     if (score < scoreRange[0]): score = scoreRange[0]
+    if (score > scoreRange[1]): score = scoreRange[1]
     # if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
     # elif (totalTests < 10): score = math.pow(score, .5)
     with open(logFn, 'a', encoding="utf=8") as f:
