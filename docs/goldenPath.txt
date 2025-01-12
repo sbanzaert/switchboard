@@ -1,6 +1,6 @@
 TABLE SETUP:
 pulseaudio -k
-jack start (need to figure out non-GUI method, must start daemon before below)
+jack start (need to figure out non-GUI method, must start daemon before below, currently qjackctl)
 fluidsynth -i -s -g 0.6 -a jack -c 2 -z 64 -o synth.cpu-cores=4 -o synth.polyphony=128 /home/pi/Projects/MIDIsynth/Orpheus_18.06.2020.sf2 
 puredata -nogui -jack -jackname sw -nojackconnect -outchannels 1 ~/Python/switchboard/headphones/myfirstpd.pd
 sudo python tableTest.py
