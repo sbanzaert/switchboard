@@ -26,12 +26,14 @@ handCrank = 1
 #####
 ## logging
 #####
-logFn = "./" + time.strftime("%m-%d-%H%M") + "-scores.txt"
+logFn = "./logs/" + time.strftime("%m-%d-%H%M") + "-alldata.txt"
+scoreFn = "./logs/" + time.strftime("%m-%d-%H%M") + "-scores.txt"
 print(logFn)
 
 with open(logFn, 'w', encoding="utf=8") as f:
-    f.write("Log started " + time.strftime("%m-%d--$H$M"))
-
+    f.write("Log started " + time.strftime("%m-%d--%H%M")+"\n")
+with open(scoreFn, 'w', encoding="utf=8") as f:
+    f.write("Log started " + time.strftime("%m-%d--%H%M")+"\n")
 #####
 ## puredata OSC routines
 #####
@@ -45,8 +47,8 @@ scoreRange = [0, 1]
 mid_score = sum(scoreRange)/2
 
 #ranges are in format [bad,good]
-LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [80, 2000]}
-reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
+LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [40, 2000]} # modified from 80/.5 for last run Sunday
+reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.8,0]}
 
 def remap(x, range1, range2):
     d1 = range1[1]-range1[0]
@@ -116,6 +118,8 @@ def updateScore(data, targets, currentScore): #
     if (sum(totalTests) == 0):
         with open(logFn, 'a', encoding="utf=8") as f:
             f.write("Total tests = 0 \n")
+        with open(scoreFn, 'a', encoding="utf=8") as f:
+            f.write(str(currentScore) + '\n')
         return currentScore
     score = (3*sum(correct_active) - sum(wrong_removal)) / (3*sum(totalTests))
     if (score < scoreRange[0]): score = scoreRange[0]
@@ -123,10 +127,12 @@ def updateScore(data, targets, currentScore): #
     # if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
     # elif (totalTests < 10): score = math.pow(score, .5)
     with open(logFn, 'a', encoding="utf=8") as f:
-        f.write(str(score) + ", " + str(sum(correct_active)) + ", "+ str(sum(wrong_removal)) + ", "+ str(sum(wrong_noAct)) + ", "+ str(totalTests) + '\n')
+        f.write(str(score) + ", " + str(sum(correct_active)) + ", "+ str(sum(wrong_removal)) + ", "+ str(sum(wrong_noAct)) + ", "+ str(sum(totalTests)) + '\n')
         f.write(str(data)+"\n")
         f.write(str(targets)+"\n")
         f.write(str(correct_active) + "\n\n")
+    with open(scoreFn, 'a', encoding="utf=8") as f:
+        f.write(str(score) + '\n')
     return score
 
 
