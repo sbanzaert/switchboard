@@ -1,0 +1,116 @@
+Log started 01-16--0007
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+Total tests = 0 
+0.23333333333333334, 0, 0, 1, 1
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.16333333333333333, 0, 0, 2, 2
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.11433333333333334, 0, 0, 3, 3
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.08003333333333335, 0, 0, 4, 4
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.05602333333333334, 0, 0, 5, 5
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.03921633333333334, 0, 0, 6, 6
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.027451433333333337, 0, 0, 7, 7
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.019216003333333335, 0, 0, 8, 8
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.013451202333333336, 0, 0, 10, 10
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.009415841633333335, 0, 0, 12, 12
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.006591089143333334, 0, 0, 14, 14
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.004613762400333335, 0, 0, 16, 16
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.003229633680233334, 0, 0, 18, 18
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.002260743576163334, 0, 0, 20, 20
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.0015825205033143338, 0, 0, 22, 22
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.0011077643523200336, 0, 0, 24, 24
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.0007754350466240235, 0, 0, 24, 24
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, False, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.0005428045326368165, 0, 0, 24, 24
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, False, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+
+0.00037996317284577153, 0, 0, 24, 24
+[[False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False], [False, False, False, False, False, False, False, False, False, False, False, False, False, False]]
+[[True, 0, 0, 0, 0, 0, 0, 0, False, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, True, 0, 0, 0, 0]]
+deque([0, 0, 0, 0, 0, 0, 0, 0], maxlen=8)
+

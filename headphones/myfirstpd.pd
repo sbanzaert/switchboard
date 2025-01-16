@@ -1,11 +1,12 @@
-#N canvas 171 53 1578 852 12;
+#N canvas 171 97 1578 852 12;
 #X obj 412 225 readsf~ 2;
 #X obj 389 820 dac~;
 #X msg 299 214 start;
-#X floatatom 887 417 5 0 1 0 - - - 0;
+#X floatatom 887 417 5 0 1 0 - - -;
 #X obj 467 365 delwrite~ \$0-echo-del 2000;
 #X obj 391 420 +~;
-#X obj 317 118 bng 19 250 50 0 empty empty empty 0 -10 0 12 #fcfcfc #000000 #000000;
+#X obj 317 118 bng 19 250 50 0 empty empty empty 0 -10 0 12 -262144
+-1 -1;
 #X msg 36 564 open ./audio/outfile.wav;
 #X obj 221 603 writesf~ 2;
 #X msg 344 316 stop;
@@ -39,7 +40,7 @@
 #X obj 1128 727 *~;
 #X obj 584 592 +~ 1;
 #X obj 453 581 *~;
-#X floatatom 718 556 5 0 0 0 - - - 0;
+#X floatatom 718 556 5 0 0 0 - - -;
 #X obj 716 621 +~ 1;
 #X text 883 511 freq2;
 #X obj 582 627 *~ 0.5;
@@ -52,18 +53,22 @@
 #X obj 451 548 *~ 0.06;
 #X obj 391 718 +~;
 #X obj 615 718 *~ 0.4;
-#X floatatom 1170 598 5 0 0 0 - - - 0;
-#X obj 1171 562 hsl 162 19 0 1 0 0 empty empty empty -2 -10 0 12 #fcfcfc #000000 #000000 0 1;
-#X floatatom 546 264 5 0 0 0 - - - 0;
-#X floatatom 666 293 5 0 0 0 - - - 0;
+#X floatatom 1170 598 5 0 0 0 - - -;
+#X obj 1171 562 hsl 162 19 0 1 0 0 empty empty empty -2 -10 0 12 -262144
+-1 -1 0 1;
+#X floatatom 546 264 5 0 0 0 - - -;
+#X floatatom 666 293 5 0 0 0 - - -;
 #X obj 390 457 *~ 2;
 #X obj 593 551 osc~ 1.07;
 #X obj 717 587 osc~ 0.617;
-#X floatatom 595 520 5 0 0 0 - - - 0;
-#X obj 582 468 hsl 162 19 0.1 5 0 0 empty empty empty -2 -10 0 12 #fcfcfc #000000 #000000 0 1;
+#X floatatom 595 520 5 0 0 0 - - -;
+#X obj 582 468 hsl 162 19 0.1 5 0 0 empty empty empty -2 -10 0 12 -262144
+-1 -1 0 1;
 #X text 760 475 freq1;
-#X obj 715 510 hsl 162 19 0.1 5 0 0 empty empty empty -2 -10 0 12 #fcfcfc #000000 #000000 0 1;
+#X obj 715 510 hsl 162 19 0.1 5 0 0 empty empty empty -2 -10 0 12 -262144
+-1 -1 0 1;
 #X text 1155 194 <-- name \, dry \, rvb \, static \, start;
+#X obj 394 751 *~ 0.7;
 #X connect 0 0 25 0;
 #X connect 0 0 26 0;
 #X connect 0 2 9 0;
@@ -114,7 +119,7 @@
 #X connect 48 0 49 1;
 #X connect 49 0 51 0;
 #X connect 50 0 39 0;
-#X connect 51 0 1 0;
+#X connect 51 0 65 0;
 #X connect 52 0 47 0;
 #X connect 52 0 39 1;
 #X connect 54 0 53 0;
@@ -125,3 +130,5 @@
 #X connect 59 0 41 0;
 #X connect 61 0 60 0;
 #X connect 63 0 40 0;
+#X connect 65 0 1 0;
+#X connect 65 0 1 1;

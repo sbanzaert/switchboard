@@ -49,7 +49,7 @@ mid_score = sum(scoreRange)/2
 #ranges are in format [bad,good]
 LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [40, 2000]} # modified from 80/.5 for last run Sunday
 reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
-staticRanges = {'easy': [.2,0], 'medium': [.4,0], 'hard': [.6, 0]} #
+staticRanges = {'easy': [.2,0], 'medium': [.4,0], 'hard': [.7, 0]} #
 
 def remap(x, range1, range2):
     d1 = range1[1]-range1[0]
@@ -63,7 +63,7 @@ def updatePuredata(s: float, difficulty: str):
     if score <= mid_score:
         rvb = remap(s, [scoreRange[0], mid_score], reverbRanges[difficulty])
     else: rvb = 0
-    PDclient.send_message("/test",[.5,rvb,lpf,0]) # don't intentionally start PD
+    PDclient.send_message("/test",[.5,rvb,static,0]) # don't intentionally start PD
     print (str(score) + ", " + str(lpf) + ", " + str(rvb))
 
 
@@ -74,7 +74,7 @@ def updatePuredata(s: float, difficulty: str):
 startingScore = scoreRange[0]+ (scoreRange[1]-scoreRange[0])/3
 score = startingScore # percentage score
 prevScore = score
-fallGain = 0.3 # peak detector w/ fadeaway, gain 0->1
+fallGain = 0.5 # peak detector w/ fadeaway, gain 0->1
 scoringHistory = 2 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
 initScoreDataGood = []
 initScoreDataBad = []
@@ -237,7 +237,7 @@ print(ports)
 mout.open_port(2)
 
 #start puredata patch!
-PDclient.send_message("/test",[1-rvb,rvb,lpf,1] )
+PDclient.send_message("/test",[1-rvb,rvb,0.6,1] )
 
 for msg in m.play():
     if (msg.channel == gameTrack and hasattr(msg,'note')): 
