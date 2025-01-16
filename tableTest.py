@@ -48,7 +48,8 @@ mid_score = sum(scoreRange)/2
 
 #ranges are in format [bad,good]
 LPFranges = {'easy': [1000,2000], 'medium': [500,2000], 'hard': [40, 2000]} # modified from 80/.5 for last run Sunday
-reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.8,0]}
+reverbRanges = {'easy': [.1,0], 'medium': [.3,0], 'hard': [.5,0]}
+staticRanges = {'easy': [.2,0], 'medium': [.4,0], 'hard': [.6, 0]} #
 
 def remap(x, range1, range2):
     d1 = range1[1]-range1[0]
@@ -58,10 +59,11 @@ def remap(x, range1, range2):
 def updatePuredata(s: float, difficulty: str):
     # map score to LPF value
     lpf = remap(s, scoreRange, LPFranges[difficulty])
+    static = remap(s, scoreRange, staticRanges[difficulty])
     if score <= mid_score:
         rvb = remap(s, [scoreRange[0], mid_score], reverbRanges[difficulty])
     else: rvb = 0
-    PDclient.send_message("/test",[1-rvb,rvb,lpf,0]) # don't intentionally start PD
+    PDclient.send_message("/test",[.5,rvb,lpf,0]) # don't intentionally start PD
     print (str(score) + ", " + str(lpf) + ", " + str(rvb))
 
 
@@ -71,6 +73,8 @@ def updatePuredata(s: float, difficulty: str):
 #####
 startingScore = scoreRange[0]+ (scoreRange[1]-scoreRange[0])/3
 score = startingScore # percentage score
+prevScore = score
+fallGain = 0.3 # peak detector w/ fadeaway, gain 0->1
 scoringHistory = 2 * 4 # scoring done in ticks, one per quarter note, this is ticksPerBar * bars
 initScoreDataGood = []
 initScoreDataBad = []
@@ -122,6 +126,8 @@ def updateScore(data, targets, currentScore): #
             f.write(str(currentScore) + '\n')
         return currentScore
     score = (3*sum(correct_active) - sum(wrong_removal)) / (3*sum(totalTests))
+    if (score >= currentScore): score = score
+    elif (score < currentScore): score = fallGain*(score-currentScore) + currentScore
     if (score < scoreRange[0]): score = scoreRange[0]
     if (score > scoreRange[1]): score = scoreRange[1]
     # if (totalTests < 5): score = math.pow(score, .25) # grade on a curve if total events is low
