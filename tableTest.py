@@ -239,9 +239,22 @@ def updateTargetsFromNote(pitch: int, v: bool):
         switchTargets[2][13] = v # use unused part of bank 2 for crank data
 
 mout = rtmidi.MidiOut()
-ports = mout.get_ports()
+fluidport = 1
+portFound = False
+
+## look for fluidsynth
+while portFound == False:
+    ports = mout.get_ports()
+    for p in range(len(ports)):
+        if ("FLUID" in ports[p]):
+            fluidport = p
+            portFound = True
+    sleep(1)
+    print("still waiting for fluidsynth")
+
 print(ports)
-mout.open_port(2)
+mout.open_port(fluidport)
+
 while True:
     while True:
         if hardMode.value == False:
@@ -250,7 +263,7 @@ while True:
         if easyMode.value == False:
             gameMode = 'medium'
             break
-        
+
     #start puredata patch!
     PDclient.send_message("/test",[1-rvb,rvb,0.6,1] )
 
