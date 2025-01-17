@@ -16,6 +16,7 @@ import collections
 from pythonosc.udp_client import SimpleUDPClient
 from time import sleep
 import time
+import atexit
 
 
 ser = serial.Serial("/dev/ttyUSB0")
@@ -26,8 +27,8 @@ handCrank = 1
 #####
 ## logging
 #####
-logFn = "./logs/" + time.strftime("%m-%d-%H%M") + "-alldata.txt"
-scoreFn = "./logs/" + time.strftime("%m-%d-%H%M") + "-scores.txt"
+logFn = "/home/pi/Python/switchboard/logs/" + time.strftime("%m-%d-%H%M") + "-alldata.txt"
+scoreFn = "/home/pi/Python/switchboard/logs/" + time.strftime("%m-%d-%H%M") + "-scores.txt"
 print(logFn)
 
 with open(logFn, 'w', encoding="utf=8") as f:
@@ -189,6 +190,18 @@ for p in range(num_pixels):
     pixels[p] = color['off']
 pixels.show()
 print("pixels cleared")
+
+#####
+## Show status on exit.
+#####
+def cleanup():
+    print("Switchboard is exiting.  Bye Bye.")
+    pixels[0] = color['red']
+    pixels.show()
+
+
+atexit.register(cleanup)
+
 
 ### set up table (game starts all switches down)
 for i in range(len(allSwitchBots)):

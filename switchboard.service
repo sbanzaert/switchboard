@@ -1,0 +1,9 @@
+[Unit]
+Description=switchboard
+After=sound.target
+
+[Service]
+ExecStart=/bin/bash /home/pi/Python/switchboard/startup.sh
+
+[Install]
+WantedBy=multi-user.target
