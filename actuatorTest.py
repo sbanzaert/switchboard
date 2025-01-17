@@ -19,10 +19,10 @@ alarm.value = True
 unused.value = True
 
 while True:
-    # honk.value = False
-    # sleep(.5)
-    # honk.value = True
-    # sleep(2)
+    honk.value = False
+    sleep(.5)
+    honk.value = True
+    sleep(2)
     phone.value = False
     sleep(.2)
     phone.value = True
@@ -32,7 +32,7 @@ while True:
     phone.value = True
     sleep(.4)
 
-    # alarm.value = False
-    # sleep(.5)
-    # alarm.value = True
-    # sleep(2)
+    alarm.value = False
+    sleep(.5)
+    alarm.value = True
+    sleep(2)

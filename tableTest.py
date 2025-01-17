@@ -166,6 +166,13 @@ for io in (honk, phone, alarm, unused, crankA, crankB):
     io.direction = digitalio.Direction.OUTPUT
     io.value = True
 
+hardMode = digitalio.DigitalInOut(board.D16)
+easyMode = digitalio.DigitalInOut(board.D26)
+for io in (hardMode, easyMode):
+    io.direction = digitalio.Direction.INPUT
+    io.pull = digitalio.Pull.UP
+
+
 #####
 ## Neopixels - one strand for the whole table
 #####
@@ -235,82 +242,90 @@ mout = rtmidi.MidiOut()
 ports = mout.get_ports()
 print(ports)
 mout.open_port(2)
-
-#start puredata patch!
-PDclient.send_message("/test",[1-rvb,rvb,0.6,1] )
-
-for msg in m.play():
-    if (msg.channel == gameTrack and hasattr(msg,'note')): 
-        if msg.note in jackInRange:
-            if msg.type == "note_off": # turn off LED if off in lead in/out
-                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
-            if msg.type == "note_on": # leadIn controls green ON (including solid green during actual target)
-                pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['green']   
-        if msg.note in jackOutRange:
-            if msg.type == "note_off": # turn off LED if off in lead in/out
-                pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['off']
-            if msg.type == "note_on" : # leadOut controls red ON
-                pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['red']
-        if msg.note in jackRange:
-            if msg.type == "note_on":
-                pixels[jackLEDFromNote(msg.note)] = color['green']
-                updateTargetsFromNote(msg.note, True)
-            if msg.type == "note_off":
-                pixels[jackLEDFromNote(msg.note)] = color['off']
-                updateTargetsFromNote(msg.note, False)
-        if msg.note in switchInRange:
-            if msg.type == "note_off": # turn off both LEDs if off in lead in/out
-                pixels[switchLEDFromNote(msg.note-leadInSkip,'up')] = color['off']
-            if msg.type == "note_on":    # turn on top if on in leadin
-                pixels[switchLEDFromNote(msg.note-leadInSkip, 'up')] = color['orange']
-        if msg.note in switchOutRange:
-            if msg.type == "note_off": # turn off both LEDs if off in lead in/out
-                pixels[switchLEDFromNote(msg.note-leadOutSkip,'down')] = color['off']
-            if msg.type == "note_on":   # turn on bottom if on in leadout
-                pixels[switchLEDFromNote(msg.note-leadOutSkip, 'down')] = color['amber']                
-        if msg.note in switchRange:
-            if msg.type == "note_off":
-                pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
-                pixels[switchLEDFromNote(msg.note, 'up')] = color['off'] # turn off top when targeting note ends
-                updateTargetsFromNote(msg.note, False)
-            if msg.type == "note_on":
-                pixels[switchLEDFromNote(msg.note, 'up')] = color['orange'] # turn on top when targeting note starts
-                pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
-                updateTargetsFromNote(msg.note, True)
-        if msg.note == crankPitch + leadInSkip:
-            if msg.type == "note_on":
-                ser.write(b'y')
-            if msg.type == "note_off":
-                ser.write(b'n')
-        if msg.note == crankPitch:
-            if (msg.type == "note_on" and handCrank == 1):
-                updateTargetsFromNote(msg.note, True)
-        if msg.note == testPointPitch and msg.type == "note_on":
-            inputs = getStructuredGPIO(activeGPIO)
-            score = updateScore(inputs, switchTargets, score)
-            # print (score)
-            updatePuredata(score, gameMode)
-
-    elif (msg.channel == bellTrack and hasattr(msg,'note')):
+while True:
+    while True:
+        if hardMode.value == False:
+            gameMode = 'hard'
+            break
+        if easyMode.value == False:
+            gameMode = 'medium'
+            break
         
-        if msg.note == bellPitch:
-            if msg.type == "note_on":
-                phone.value = False
-            if msg.type == "note_off":
-                phone.value = True
-        if msg.note == alarmPitch:
-            if msg.type == "note_on":
-                alarm.value = False
-            if msg.type == "note_off":
-                alarm.value = True
-        if msg.note == hornPitch:
-            if msg.type == "note_on":
-                honk.value = False
-            if msg.type == "note_off":
-                honk.value = True
-    else:
-        mout.send_message(msg.bytes())
-    pixels.show()
+    #start puredata patch!
+    PDclient.send_message("/test",[1-rvb,rvb,0.6,1] )
+
+    for msg in m.play():
+        if (msg.channel == gameTrack and hasattr(msg,'note')): 
+            if msg.note in jackInRange:
+                if msg.type == "note_off": # turn off LED if off in lead in/out
+                    pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['off']
+                if msg.type == "note_on": # leadIn controls green ON (including solid green during actual target)
+                    pixels[jackLEDFromNote(msg.note-leadInSkip)] = color['green']   
+            if msg.note in jackOutRange:
+                if msg.type == "note_off": # turn off LED if off in lead in/out
+                    pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['off']
+                if msg.type == "note_on" : # leadOut controls red ON
+                    pixels[jackLEDFromNote(msg.note-leadOutSkip)] = color['red']
+            if msg.note in jackRange:
+                if msg.type == "note_on":
+                    pixels[jackLEDFromNote(msg.note)] = color['green']
+                    updateTargetsFromNote(msg.note, True)
+                if msg.type == "note_off":
+                    pixels[jackLEDFromNote(msg.note)] = color['off']
+                    updateTargetsFromNote(msg.note, False)
+            if msg.note in switchInRange:
+                if msg.type == "note_off": # turn off both LEDs if off in lead in/out
+                    pixels[switchLEDFromNote(msg.note-leadInSkip,'up')] = color['off']
+                if msg.type == "note_on":    # turn on top if on in leadin
+                    pixels[switchLEDFromNote(msg.note-leadInSkip, 'up')] = color['orange']
+            if msg.note in switchOutRange:
+                if msg.type == "note_off": # turn off both LEDs if off in lead in/out
+                    pixels[switchLEDFromNote(msg.note-leadOutSkip,'down')] = color['off']
+                if msg.type == "note_on":   # turn on bottom if on in leadout
+                    pixels[switchLEDFromNote(msg.note-leadOutSkip, 'down')] = color['amber']                
+            if msg.note in switchRange:
+                if msg.type == "note_off":
+                    pixels[switchLEDFromNote(msg.note, 'down')] = color['amber'] # turn on bottom when targeting note ends
+                    pixels[switchLEDFromNote(msg.note, 'up')] = color['off'] # turn off top when targeting note ends
+                    updateTargetsFromNote(msg.note, False)
+                if msg.type == "note_on":
+                    pixels[switchLEDFromNote(msg.note, 'up')] = color['orange'] # turn on top when targeting note starts
+                    pixels[switchLEDFromNote(msg.note, 'down')] = color['off'] # turn off bottom when targeting note starts
+                    updateTargetsFromNote(msg.note, True)
+            if msg.note == crankPitch + leadInSkip:
+                if msg.type == "note_on":
+                    ser.write(b'y')
+                if msg.type == "note_off":
+                    ser.write(b'n')
+            if msg.note == crankPitch:
+                if (msg.type == "note_on" and handCrank == 1):
+                    updateTargetsFromNote(msg.note, True)
+            if msg.note == testPointPitch and msg.type == "note_on":
+                inputs = getStructuredGPIO(activeGPIO)
+                score = updateScore(inputs, switchTargets, score)
+                # print (score)
+                updatePuredata(score, gameMode)
+
+        elif (msg.channel == bellTrack and hasattr(msg,'note')):
+            
+            if msg.note == bellPitch:
+                if msg.type == "note_on":
+                    phone.value = False
+                if msg.type == "note_off":
+                    phone.value = True
+            if msg.note == alarmPitch:
+                if msg.type == "note_on":
+                    alarm.value = False
+                if msg.type == "note_off":
+                    alarm.value = True
+            if msg.note == hornPitch:
+                if msg.type == "note_on":
+                    honk.value = False
+                if msg.type == "note_off":
+                    honk.value = True
+        else:
+            mout.send_message(msg.bytes())
+        pixels.show()
 
 #####
 ## Clean up: stop DSP...
